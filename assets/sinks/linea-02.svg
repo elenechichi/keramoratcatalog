@@ -1,0 +1,11 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Linea Lunga">
+  <rect width="400" height="300" fill="#F4EFE9"/>
+  
+  <rect x="26" y="203.5" width="348" height="16" fill="#2A2522" opacity="0.12"/>
+  <rect x="79.0" y="100.5" width="242" height="99" fill="none" stroke="#2A2522" stroke-width="3"/>
+  <rect x="95.0" y="116.5" width="210" height="67" fill="none" stroke="#E3934A" stroke-width="2.5"/>
+  <circle cx="200" cy="150.0" r="4" fill="#2A2522"/>
+  <line x1="196" y1="70.5" x2="196" y2="94.5" stroke="#2A2522" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 196 70.5 q 16 0 16 18" fill="none" stroke="#2A2522" stroke-width="4" stroke-linecap="round"/>
+
+</svg>

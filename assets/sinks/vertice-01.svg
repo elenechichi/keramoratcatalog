@@ -1,0 +1,11 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vertice">
+  <rect width="400" height="300" fill="#F4EFE9"/>
+  
+  <rect x="30" y="252" width="340" height="16" fill="#2A2522" opacity="0.12"/>
+  <path d="M 120 92 L 276 92 L 276 248 L 160 248 Q 120 248 120 208 Z" fill="none" stroke="#2A2522" stroke-width="3"/>
+  <path d="M 138 110 L 258 110 L 258 230 L 174 230 Q 138 230 138 194 Z" fill="none" stroke="#E3934A" stroke-width="2.5"/>
+  <circle cx="226" cy="198" r="4" fill="#2A2522"/>
+  <line x1="246" y1="66" x2="246" y2="88" stroke="#2A2522" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 246 66 q 16 0 16 18" fill="none" stroke="#2A2522" stroke-width="4" stroke-linecap="round"/>
+
+</svg>

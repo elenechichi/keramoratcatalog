@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KERAMO ART — სანიჟარეების კატალოგი</title>
+<meta name="description" content="KERAMO ART — პრემიუმ კერამოგრანიტისა და ფაიფურის სანიჟარეების კატალოგი. ბადიისებრი, ჩაშენებული, სვეტზე დამონტაჟებული და კუთხის მოდელები.">
+<link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="#top" class="brand">
+      <img src="assets/logo-mark.svg" alt="">
+      <span class="brand-word">KERAMO ART</span>
+    </a>
+    <nav class="main-nav">
+      <a href="#catalog">კატალოგი</a>
+      <a href="#about">ბრენდი</a>
+      <a href="#process">შეკვეთის პროცესი</a>
+      <a href="#contact">კონტაქტი</a>
+    </nav>
+    <a href="#contact" class="btn nav-cta">მოთხოვნის გაგზავნა</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <p class="hero-eyebrow">დიზაინი, რომელიც სივრცეს ხასიათს სძენს</p>
+        <h1>კერამოგრანიტისა და ფაიფურის სანიჟარეების კატალოგი</h1>
+        <p class="lede">24 მოდელი ხუთ კატეგორიაში — ბადიისებრი, ჩაშენებული, მართკუთხა, სვეტზე დამონტაჟებული და კუთხის ნიჟარები. აირჩიეთ ფორმა და მასალა, ჩვენ დაგეხმარებით კონკრეტული სივრცისთვის სწორი მოდელის შერჩევაში.</p>
+        <div class="hero-actions">
+          <a href="#catalog" class="btn btn-primary">კატალოგის დათვალიერება</a>
+          <a href="#contact" class="btn btn-ghost">კონსულტაციის მოთხოვნა</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><span class="num">24</span><span class="label">მოდელი კატალოგში</span></div>
+          <div class="hero-stat"><span class="num">5</span><span class="label">კატეგორია</span></div>
+          <div class="hero-stat"><span class="num">2</span><span class="label">მასალა — კერამოგრანიტი, ფაიფური</span></div>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg class="chev-grid" viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg">
+          <path class="accent" d="M40 70 L120 10 L200 70"/>
+          <path d="M40 110 L120 50 L200 110"/>
+          <path d="M40 150 L120 90 L200 150"/>
+          <path d="M220 190 L300 130 L380 190"/>
+          <path class="accent" d="M220 230 L300 170 L380 230"/>
+          <path d="M220 270 L300 210 L380 270"/>
+          <path d="M40 300 L120 240 L200 300"/>
+          <path d="M40 340 L120 280 L200 340"/>
+          <path class="accent" d="M40 380 L120 320 L200 380"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="about-section">
+    <div class="wrap about">
+      <p class="lede-large">KERAMO ART აპროექტებს და ამარაგებს <em>სანიჟარეებს</em>, რომლებიც აბაზანას ინტერიერის ხასიათის მთავარ დეტალად იქცევა — ფორმა, ზედაპირი და მასალა შეთანხმებულია ერთმანეთთან კოლექციების მიხედვით.</p>
+      <ul class="about-points">
+        <li><strong>მასალა</strong><span>კერამოგრანიტი და ფაიფური — მდგრადი ზედაპირი, რომელიც არ კარგავს ფერს და წლების განმავლობაში ინარჩუნებს სახეს.</span></li>
+        <li><strong>ფორმა</strong><span>ბადიისებრიდან კუთხურამდე — ყოველი კოლექცია შექმნილია კონკრეტული ტიპის სივრცისთვის.</span></li>
+        <li><strong>ინდივიდუალური შერჩევა</strong><span>დაგეხმარებით კონკრეტული აბაზანისთვის ზომის, ფორმისა და ფერის შერჩევაში — უფასო კონსულტაცია.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="catalog" class="catalog">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="section-tag">სრული კატალოგი</p>
+          <h2>აირჩიეთ კატეგორია</h2>
+        </div>
+        <p>დააჭირეთ ნებისმიერ მოდელს დეტალური სპეციფიკაციისა და მოთხოვნის გასაგზავნად.</p>
+      </div>
+
+      <div class="filters" role="group" aria-label="კატეგორიის ფილტრი" id="filters"></div>
+      <div class="tile-grid" id="tile-grid"></div>
+      <p class="empty-state" id="empty-state" hidden>ამ კატეგორიაში მოდელები მალე დაემატება.</p>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="section-tag">როგორ მუშაობს</p>
+          <h2>შეკვეთის პროცესი</h2>
+        </div>
+        <p>საიტზე გადახდა არ ხორციელდება — კატალოგი დამხმარეა შერჩევისთვის, შეკვეთას ვათანხმებთ პირდაპირ.</p>
+      </div>
+      <div class="process-list">
+        <div class="process-item">
+          <div class="step">ეტაპი 1</div>
+          <h3>შერჩევა</h3>
+          <p>დაათვალიერეთ კატალოგი, შეარჩიეთ მოდელი/მოდელები და გამოგვიგზავნეთ მოთხოვნა საკონტაქტო ფორმით.</p>
+        </div>
+        <div class="process-item">
+          <div class="step">ეტაპი 2</div>
+          <h3>კონსულტაცია</h3>
+          <p>დაგიკავშირდებით 24 საათის განმავლობაში — დავაზუსტებთ ზომას, ფერსა და მონტაჟის დეტალებს თქვენი სივრცისთვის.</p>
+        </div>
+        <div class="process-item">
+          <div class="step">ეტაპი 3</div>
+          <h3>შეკვეთა და მიწოდება</h3>
+          <p>დავადასტურებთ ფასსა და ვადებს, შემდეგ ორგანიზებას გავუწევთ მიწოდებას.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="section-tag">დაგვიკავშირდით</p>
+          <h2>მოთხოვნის გაგზავნა</h2>
+        </div>
+        <p>შეავსეთ ფორმა ან დაგვიკავშირდით პირდაპირ — უპასუხებთ უმოკლეს დროში.</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <dl>
+            <dt>ტელეფონი</dt>
+            <dd><a href="tel:+995000000000">+995 XXX XXX XXX</a></dd>
+            <dt>ელ.ფოსტა</dt>
+            <dd><a href="mailto:info@keramoart.ge">info@keramoart.ge</a></dd>
+            <dt>Instagram</dt>
+            <dd><a href="#" rel="noopener">@keramoart</a></dd>
+            <dt>სამუშაო საათები</dt>
+            <dd>ორშ–შაბ, 10:00–19:00</dd>
+          </dl>
+          <p class="contact-note">* ტელეფონი, ელ.ფოსტა და სოციალური ბმულები placeholder-ებია — შეცვალეთ რეალური მონაცემებით <code>index.html</code>-ში, <code>#contact</code> სექციაში.</p>
+        </div>
+        <form id="inquiry-form">
+          <div class="form-field">
+            <label for="f-name">სახელი, გვარი</label>
+            <input id="f-name" name="name" type="text" required placeholder="თქვენი სახელი">
+          </div>
+          <div class="form-field">
+            <label for="f-phone">საკონტაქტო ტელეფონი</label>
+            <input id="f-phone" name="phone" type="tel" required placeholder="+995 ...">
+          </div>
+          <div class="form-field">
+            <label for="f-product">რომელი მოდელი გაინტერესებთ?</label>
+            <input id="f-product" name="product" type="text" placeholder="მაგ. Onda, Pietra...">
+          </div>
+          <div class="form-field">
+            <label for="f-message">შეტყობინება</label>
+            <textarea id="f-message" name="message" placeholder="დამატებითი დეტალები თქვენი სივრცის შესახებ"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">გაგზავნა</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <small>© <span id="year"></span> KERAMO ART. ყველა უფლება დაცულია.</small>
+    <small>Orient SMM Group-ის კლიენტი პროექტი</small>
+  </div>
+</footer>
+
+<div class="panel-overlay" id="panel-overlay"></div>
+<aside class="panel" id="product-panel" aria-hidden="true" aria-labelledby="panel-title">
+  <button class="panel-close" id="panel-close" aria-label="დახურვა">&times;</button>
+  <div class="panel-media"><img id="panel-img" src="" alt=""></div>
+  <div class="panel-body">
+    <p class="panel-collection" id="panel-collection"></p>
+    <h3 id="panel-title"></h3>
+    <ul class="panel-specs">
+      <li><span class="k">კატეგორია</span><span id="panel-category"></span></li>
+      <li><span class="k">მასალა</span><span id="panel-material"></span></li>
+      <li><span class="k">ფერი</span><span id="panel-color"></span></li>
+      <li><span class="k">ზომა</span><span id="panel-size"></span></li>
+    </ul>
+    <a href="#contact" class="btn btn-primary" id="panel-inquire">ამ მოდელზე მოთხოვნის გაგზავნა</a>
+  </div>
+</aside>
+
+<script src="js/products.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

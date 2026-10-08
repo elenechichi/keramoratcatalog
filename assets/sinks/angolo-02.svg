@@ -1,0 +1,11 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Angolo Scuro">
+  <rect width="400" height="300" fill="#F4EFE9"/>
+  
+  <rect x="30" y="263" width="340" height="16" fill="#2A2522" opacity="0.12"/>
+  <path d="M 120 92 L 287 92 L 287 259 L 160 259 Q 120 259 120 219 Z" fill="none" stroke="#2A2522" stroke-width="3"/>
+  <path d="M 138 110 L 269 110 L 269 241 L 174 241 Q 138 241 138 205 Z" fill="none" stroke="#E3934A" stroke-width="2.5"/>
+  <circle cx="237" cy="209" r="4" fill="#2A2522"/>
+  <line x1="257" y1="66" x2="257" y2="88" stroke="#2A2522" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 257 66 q 16 0 16 18" fill="none" stroke="#2A2522" stroke-width="4" stroke-linecap="round"/>
+
+</svg>
