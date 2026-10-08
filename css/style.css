@@ -526,6 +526,12 @@ section { padding: 96px 0; }
   padding-top: 20px;
 }
 
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
 .form-field { margin-bottom: 20px; }
 .form-field label {
   display: block;
@@ -545,9 +551,31 @@ section { padding: 96px 0; }
   font-size: 15px;
   padding: 10px 2px;
 }
+.form-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23b9ada0' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 2px center;
+  padding-right: 20px;
+  cursor: pointer;
+}
+.form-field select:invalid,
+.form-field select option[value=""] {
+  color: #8a7f72;
+}
+.form-field select option {
+  color: var(--ink);
+  background: var(--cream);
+}
 .form-field textarea { resize: vertical; min-height: 72px; }
 .form-field input::placeholder,
 .form-field textarea::placeholder { color: #8a7f72; }
+
+@media (max-width: 560px) {
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+}
 
 /* ---------- Footer ---------- */
 .site-footer {

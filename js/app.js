@@ -120,14 +120,18 @@
     e.preventDefault();
     var name = form.name.value.trim();
     var phone = form.phone.value.trim();
+    var type = form.type.value.trim();
+    var city = form.city.value.trim();
     var product = form.product.value.trim();
     var message = form.message.value.trim();
 
-    var subject = "მოთხოვნა KERAMO ART კატალოგიდან" + (product ? " — " + product : "");
+    var subject = "მოთხოვნა KERAMO ART გალერეიდან" + (product ? " — " + product : "");
     var bodyLines = [
       "სახელი: " + name,
       "ტელეფონი: " + phone,
-      product ? "მოდელი: " + product : null,
+      type ? "ტიპი: " + type : null,
+      city ? "ქალაქი: " + city : null,
+      product ? "ნიმუში: " + product : null,
       "",
       message
     ].filter(function (line) { return line !== null; });

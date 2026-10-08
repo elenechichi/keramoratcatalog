@@ -154,17 +154,47 @@
           <p class="contact-note">* ელ.ფოსტა და სამუშაო საათები placeholder-ებია — შეცვალეთ რეალური მონაცემებით <code>index.html</code>-ში, <code>#contact</code> სექციაში.</p>
         </div>
         <form id="inquiry-form">
-          <div class="form-field">
-            <label for="f-name">სახელი, გვარი</label>
-            <input id="f-name" name="name" type="text" required placeholder="თქვენი სახელი">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="f-name">სახელი, გვარი</label>
+              <input id="f-name" name="name" type="text" required placeholder="თქვენი სახელი">
+            </div>
+            <div class="form-field">
+              <label for="f-phone">საკონტაქტო ტელეფონი</label>
+              <input id="f-phone" name="phone" type="tel" required placeholder="+995 ...">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="f-type">რა ტიპის ნიჟარა გსურთ?</label>
+              <select id="f-type" name="type">
+                <option value="">აირჩიეთ ტიპი</option>
+                <option value="ჩაშენებული">ჩაშენებული</option>
+                <option value="ორმაგი">ორმაგი</option>
+                <option value="პოსტამენტური">პოსტამენტური</option>
+                <option value="სარეცხ მანქანაზე მორგებული">სარეცხ მანქანაზე მორგებული</option>
+                <option value="ინდივიდუალური დიზაინი">ინდივიდუალური დიზაინი</option>
+                <option value="ჯერ არ ვიცი, მჭირდება რჩევა">ჯერ არ ვიცი, მჭირდება რჩევა</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="f-city">სად ცხოვრობთ?</label>
+              <select id="f-city" name="city">
+                <option value="">აირჩიეთ ქალაქი</option>
+                <option value="თბილისი">თბილისი</option>
+                <option value="ბათუმი">ბათუმი</option>
+                <option value="ქუთაისი">ქუთაისი</option>
+                <option value="რუსთავი">რუსთავი</option>
+                <option value="გორი">გორი</option>
+                <option value="ზუგდიდი">ზუგდიდი</option>
+                <option value="თელავი">თელავი</option>
+                <option value="სხვა">სხვა ქალაქი</option>
+              </select>
+            </div>
           </div>
           <div class="form-field">
-            <label for="f-phone">საკონტაქტო ტელეფონი</label>
-            <input id="f-phone" name="phone" type="tel" required placeholder="+995 ...">
-          </div>
-          <div class="form-field">
-            <label for="f-product">რომელი მოდელი გაინტერესებთ?</label>
-            <input id="f-product" name="product" type="text" placeholder="მაგ. Onda, Pietra...">
+            <label for="f-product">რომელი ნიმუში მოგწონთ? (არასავალდებულო)</label>
+            <input id="f-product" name="product" type="text" placeholder="მაგ. Nebbia, Pietra Serena...">
           </div>
           <div class="form-field">
             <label for="f-message">შეტყობინება</label>
