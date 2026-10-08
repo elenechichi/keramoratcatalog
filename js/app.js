@@ -13,7 +13,7 @@
   }
 
   function renderFilters() {
-    var all = [{ id: "all", label: "ყველა მოდელი" }].concat(CATEGORIES);
+    var all = [{ id: "all", label: "ყველა პროექტი" }].concat(CATEGORIES);
     filtersEl.innerHTML = "";
     all.forEach(function (cat) {
       var btn = document.createElement("button");
@@ -32,7 +32,7 @@
   }
 
   function productImg(p) {
-    return "assets/sinks/" + p.id + ".svg";
+    return "assets/sinks/" + p.id + ".jpg";
   }
 
   function renderGrid() {
@@ -48,10 +48,11 @@
       tile.type = "button";
       tile.className = "tile";
       tile.setAttribute("aria-label", p.name + " — " + p.size);
+      var badge = p.washer ? '<span class="tile-badge">სარეცხ მანქანაზე მორგებული</span>' : '';
       tile.innerHTML =
-        '<div class="tile-media"><img src="' + productImg(p) + '" alt="' + p.name + '" loading="lazy"></div>' +
+        '<div class="tile-media">' + badge + '<img src="' + productImg(p) + '" alt="' + p.name + '" loading="lazy"></div>' +
         '<div class="tile-body">' +
-          '<p class="tile-collection">' + p.collection + '</p>' +
+          '<p class="tile-collection">' + categoryLabel(p.category) + '</p>' +
           '<h3 class="tile-name">' + p.name + '</h3>' +
           '<p class="tile-meta">' + p.material + ' · ' + p.size + '</p>' +
         '</div>';
@@ -74,12 +75,13 @@
   function openPanel(p) {
     document.getElementById("panel-img").src = productImg(p);
     document.getElementById("panel-img").alt = p.name;
-    document.getElementById("panel-collection").textContent = p.collection + " კოლექცია";
+    document.getElementById("panel-collection").textContent = categoryLabel(p.category);
     document.getElementById("panel-title").textContent = p.name;
-    document.getElementById("panel-category").textContent = categoryLabel(p.category);
     document.getElementById("panel-material").textContent = p.material;
     document.getElementById("panel-color").textContent = p.color;
     document.getElementById("panel-size").textContent = p.size;
+    document.getElementById("panel-note").textContent = p.note || "";
+    document.getElementById("panel-note").hidden = !p.note;
 
     var inquireLink = document.getElementById("panel-inquire");
     inquireLink.onclick = function () {
@@ -136,6 +138,17 @@
 
     window.location.href = mailto;
   });
+
+  // ---- "washer-fit" feature CTA ----
+  var washerCta = document.getElementById("washer-cta");
+  if (washerCta) {
+    washerCta.addEventListener("click", function () {
+      state.category = "washer";
+      renderFilters();
+      renderGrid();
+      document.getElementById("catalog").scrollIntoView({ behavior: "smooth" });
+    });
+  }
 
   // ---- footer year ----
   document.getElementById("year").textContent = new Date().getFullYear();
