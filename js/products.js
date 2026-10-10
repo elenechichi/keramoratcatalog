@@ -2,7 +2,7 @@
 // ეს რეალური ფოტოებია; სახელები პირობითია (ყოველ ობიექტს ჩვენ ვარქმევთ სახელს დათვალიერების გასაადვილებლად).
 // ზომები მიახლოებითია — ზუსტი ზომა დგინდება ადგილზე აზომვის შემდეგ (იხ. "შეკვეთის პროცესი").
 
-const CATEGORIES = [
+var CATEGORIES = [
   { id: "built-in", label: "ჩაშენებული" },
   { id: "double",   label: "ორმაგი" },
   { id: "pedestal", label: "პოსტამენტური" },
@@ -10,7 +10,7 @@ const CATEGORIES = [
   { id: "custom",   label: "ინდივიდუალური დიზაინი" },
 ];
 
-const PRODUCTS = [
+var PRODUCTS = [
   {
     id: "nebbia-01", name: "Nebbia", category: "built-in",
     material: "კერამოგრანიტი", color: "ნაცრისფერი",
