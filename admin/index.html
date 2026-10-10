@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>KERAMO ART — ადმინ პანელი</title>
+<link rel="icon" type="image/svg+xml" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<section class="login" id="view-login" hidden>
+  <form class="login-card" id="login-form">
+    <div class="login-brand"><img src="../assets/logo-mark.svg" alt=""><span>KERAMO ART</span></div>
+    <h1>ადმინ პანელი</h1>
+    <label>ელ.ფოსტა<input type="email" id="login-email" required autocomplete="username" value="keramoartcollection@gmail.com"></label>
+    <label>პაროლი<input type="password" id="login-password" required autocomplete="current-password"></label>
+    <p class="msg" id="login-msg" hidden></p>
+    <button class="btn primary" type="submit" id="login-btn">შესვლა</button>
+    <button class="link" type="button" id="forgot-btn">დაგავიწყდათ პაროლი?</button>
+  </form>
+</section>
+
+<!-- ============ RESET PASSWORD ============ -->
+<section class="login" id="view-reset" hidden>
+  <form class="login-card" id="reset-form">
+    <div class="login-brand"><img src="../assets/logo-mark.svg" alt=""><span>KERAMO ART</span></div>
+    <h1>ახალი პაროლი</h1>
+    <label>ახალი პაროლი (მინ. 8 სიმბოლო)<input type="password" id="reset-password" minlength="8" required autocomplete="new-password"></label>
+    <p class="msg" id="reset-msg" hidden></p>
+    <button class="btn primary" type="submit">პაროლის შენახვა</button>
+  </form>
+</section>
+
+<!-- ============ NOT CONFIGURED ============ -->
+<section class="login" id="view-config" hidden>
+  <div class="login-card">
+    <h1>Supabase არ არის დაკავშირებული</h1>
+    <p>შეავსეთ <code>js/config.js</code> ფაილში SUPABASE_URL და SUPABASE_ANON_KEY.</p>
+  </div>
+</section>
+
+<!-- ============ APP ============ -->
+<div class="app" id="view-app" hidden>
+  <header class="topbar">
+    <div class="tb-brand"><img src="../assets/logo-mark.svg" alt=""><span>KERAMO ART</span><em>ადმინი</em></div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" data-tab="products" aria-selected="true">პროდუქტები</button>
+      <button class="tab" data-tab="categories">კატეგორიები</button>
+      <button class="tab" data-tab="settings">კონტაქტები</button>
+    </nav>
+    <div class="tb-right">
+      <a class="btn ghost sm" href="../" target="_blank" rel="noopener">საიტის ნახვა ↗</a>
+      <button class="btn ghost sm" id="logout-btn">გასვლა</button>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- PRODUCTS LIST -->
+    <section class="tab-panel" id="tab-products">
+      <div class="toolbar">
+        <div>
+          <h2>პროდუქტები <span class="muted" id="p-count"></span></h2>
+          <p class="muted">თანმიმდევრობა საიტზეც ასე ჩანს. ისრებით შეცვალეთ რიგი.</p>
+        </div>
+        <div class="toolbar-right">
+          <input type="search" id="p-search" placeholder="ძიება სახელით...">
+          <select id="p-filter"><option value="">ყველა კატეგორია</option></select>
+          <button class="btn primary" id="new-product-btn">+ ახალი მოდელი</button>
+        </div>
+      </div>
+      <div class="plist" id="plist"></div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="tab-panel" id="tab-categories" hidden>
+      <div class="toolbar">
+        <div>
+          <h2>კატეგორიები</h2>
+          <p class="muted">კატეგორიის წაშლისას მისი პროდუქტები რჩება, უბრალოდ კატეგორიის გარეშე.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="clist" id="clist"></div>
+        <form class="cadd" id="cat-add-form">
+          <input id="cat-new-label" placeholder="ახალი კატეგორიის სახელი" required>
+          <button class="btn primary" type="submit">დამატება</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="tab-panel" id="tab-settings" hidden>
+      <div class="toolbar"><div><h2>საკონტაქტო ინფორმაცია</h2><p class="muted">ეს მონაცემები საიტის „კონტაქტის“ სექციაში და ღილაკებზე ჩანს.</p></div></div>
+      <form class="card form-grid" id="settings-form">
+        <label>ტელეფონი<input name="phone" placeholder="+995 5XX XX XX XX"></label>
+        <label>WhatsApp / Viber ნომერი (თუ განსხვავდება)<input name="whatsapp" placeholder="ცარიელი = ტელეფონის ნომერი"></label>
+        <label>ელ.ფოსტა (აქ მოდის მოთხოვნები)<input name="email" type="email"></label>
+        <label>Facebook ბმული<input name="facebook" type="url"></label>
+        <label>სამუშაო საათები<input name="hours"></label>
+        <div class="form-actions"><button class="btn primary" type="submit">შენახვა</button></div>
+      </form>
+    </section>
+  </main>
+</div>
+
+<!-- ============ PRODUCT EDITOR (drawer) ============ -->
+<div class="drawer-overlay" id="editor-overlay" hidden></div>
+<aside class="drawer" id="editor" aria-hidden="true">
+  <form id="product-form">
+    <div class="drawer-head">
+      <h2 id="editor-title">ახალი მოდელი</h2>
+      <button type="button" class="icon-btn" id="editor-close" aria-label="დახურვა">&times;</button>
+    </div>
+    <div class="drawer-body">
+
+      <div class="field-block">
+        <div class="fb-head"><h3>ფოტოები</h3><span class="muted">პირველი ფოტო = მთავარი (ყდა). გადაათრიეთ ან ისრებით შეცვალეთ რიგი.</span></div>
+        <div class="photos" id="photos"></div>
+        <label class="dropzone" id="dropzone">
+          <input type="file" id="photo-input" accept="image/jpeg,image/png,image/webp" multiple hidden>
+          <strong>+ ფოტოების დამატება</strong>
+          <span>დააჭირეთ ან ჩააგდეთ აქ (შეგიძლიათ რამდენიმე ერთად). ავტომატურად შეიკუმშება.</span>
+        </label>
+      </div>
+
+      <div class="form-grid">
+        <label class="span2">სათაური / მოდელის სახელი *<input name="name" required placeholder="მაგ. Nebbia"></label>
+        <label>კატეგორია<select name="category" id="pf-category"></select></label>
+        <label>მასალა<input name="material" placeholder="მაგ. კერამოგრანიტი" list="dl-material"></label>
+        <label>ფერი<input name="color" placeholder="მაგ. ნაცრისფერი"></label>
+        <label>ზომა<input name="size" placeholder="მაგ. ≈ 100 × 45 სმ"></label>
+        <label class="span2">აღწერა<textarea name="note" rows="3" placeholder="მოკლე აღწერა, რომელიც პროდუქტის გვერდზე გამოჩნდება"></textarea></label>
+        <label class="check"><input type="checkbox" name="washer"> სარეცხ მანქანაზე მორგებული (ბეჯი)</label>
+        <label class="check"><input type="checkbox" name="featured"> მთავარ ბანერში გამოჩენა</label>
+        <label class="check"><input type="checkbox" name="published" checked> საიტზე გამოქვეყნებული</label>
+      </div>
+      <datalist id="dl-material">
+        <option value="კერამოგრანიტი"><option value="მარმარილოს ეფექტი"><option value="მარმარილოს ეფექტის კერამოგრანიტი"><option value="ტრავერტინის ეფექტი">
+      </datalist>
+    </div>
+    <div class="drawer-foot">
+      <button type="button" class="btn danger ghost" id="delete-product-btn">წაშლა</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost" id="editor-cancel">გაუქმება</button>
+      <button type="submit" class="btn primary" id="save-product-btn">შენახვა</button>
+    </div>
+  </form>
+</aside>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
