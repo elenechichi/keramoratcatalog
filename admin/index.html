@@ -7,7 +7,7 @@
 <title>KERAMO ART — ადმინ პანელი</title>
 <link rel="icon" type="image/svg+xml" href="../assets/logo-mark.svg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="admin.css?v=2">
+<link rel="stylesheet" href="admin.css?v=3">
 </head>
 <body>
 
@@ -50,7 +50,7 @@
     <nav class="tabs" role="tablist">
       <button class="tab" data-tab="products" aria-selected="true">პროდუქტები</button>
       <button class="tab" data-tab="categories">კატეგორიები</button>
-      <button class="tab" data-tab="settings">კონტაქტები</button>
+      <button class="tab" data-tab="settings">კონტაქტები და ფასები</button>
     </nav>
     <div class="tb-right">
       <a class="btn ghost sm" href="../" target="_blank" rel="noopener">საიტის ნახვა ↗</a>
@@ -95,13 +95,17 @@
 
     <!-- SETTINGS -->
     <section class="tab-panel" id="tab-settings" hidden>
-      <div class="toolbar"><div><h2>საკონტაქტო ინფორმაცია</h2><p class="muted">ეს მონაცემები საიტის „კონტაქტის“ სექციაში და ღილაკებზე ჩანს.</p></div></div>
+      <div class="toolbar"><div><h2>კონტაქტები და ფასები</h2><p class="muted">კონტაქტები და ფასები, რომლებიც საიტზე ჩანს. 1.6 მეტრზე გრძელ ნიჟარაზე საიტი წერს „ფასი შეთანხმებით“.</p></div></div>
       <form class="card form-grid" id="settings-form">
         <label>ტელეფონი<input name="phone" placeholder="+995 5XX XX XX XX"></label>
         <label>WhatsApp / Viber ნომერი (თუ განსხვავდება)<input name="whatsapp" placeholder="ცარიელი = ტელეფონის ნომერი"></label>
         <label>ელ.ფოსტა (აქ მოდის მოთხოვნები)<input name="email" type="email"></label>
         <label>Facebook ბმული<input name="facebook" type="url"></label>
         <label>სამუშაო საათები<input name="hours"></label>
+        <h3 class="span2 settings-sub">ფასები</h3>
+        <label>1.2 მეტრამდე, ₾<input name="price_tier1" type="number" min="0"></label>
+        <label>1.2 – 1.6 მეტრი, ₾<input name="price_tier2" type="number" min="0"></label>
+        <label>კედელზე მიყენება, ₾<input name="price_wall" type="number" min="0"></label>
         <div class="form-actions"><button class="btn primary" type="submit">შენახვა</button></div>
       </form>
     </section>
@@ -133,7 +137,12 @@
         <label>კატეგორია<select name="category" id="pf-category"></select></label>
         <label>მასალა<input name="material" placeholder="მაგ. კერამოგრანიტი" list="dl-material"></label>
         <label>ფერი<input name="color" placeholder="მაგ. ნაცრისფერი"></label>
-        <label>ზომა<input name="size" placeholder="მაგ. ≈ 100 × 45 სმ"></label>
+        <label>სიგრძე, სმ * (ფასი ამით ითვლება)<input name="length_cm" type="number" min="1" max="1000" placeholder="მაგ. 100"></label>
+        <label>სიღრმე, სმ<input name="depth_cm" type="number" min="1" max="500" placeholder="მაგ. 45"></label>
+        <label>სიმაღლე, სმ (პოსტამენტურისთვის)<input name="height_cm" type="number" min="1" max="500" placeholder="მაგ. 85"></label>
+        <label>ფასი, ₾ (ცარიელი = ავტომატური)<input name="price" type="number" min="0" placeholder="ავტომატური"></label>
+        <p class="span2 price-preview" id="price-preview"></p>
+        <label class="span2">ზომის შენიშვნა (არასავალდებულო)<input name="size" placeholder="მაგ. თაროთი, სარეცხი მანქანის სიგანეზე"></label>
         <label class="span2">აღწერა<textarea name="note" rows="3" placeholder="მოკლე აღწერა, რომელიც პროდუქტის გვერდზე გამოჩნდება"></textarea></label>
         <label class="check"><input type="checkbox" name="washer"> სარეცხ მანქანაზე მორგებული (ბეჯი)</label>
         <label class="check"><input type="checkbox" name="featured"> მთავარ ბანერში გამოჩენა</label>
@@ -155,7 +164,7 @@
 <div class="toast" id="toast" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="../js/config.js?v=2"></script>
-<script src="admin.js?v=2"></script>
+<script src="../js/config.js?v=3"></script>
+<script src="admin.js?v=3"></script>
 </body>
 </html>

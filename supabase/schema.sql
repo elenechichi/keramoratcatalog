@@ -44,7 +44,11 @@ create table if not exists public.products (
   category   text references public.categories(id) on update cascade on delete set null,
   material   text,
   color      text,
-  size       text,
+  size       text,            -- დამატებითი შენიშვნა ზომაზე (არასავალდებულო)
+  length_cm  int,             -- სიგრძე, სმ (ფასი ამით გამოითვლება)
+  depth_cm   int,             -- სიღრმე, სმ
+  height_cm  int,             -- სიმაღლე, სმ (პოსტამენტურისთვის)
+  price      int,             -- ხელით მითითებული ფასი (ცარიელი = ავტომატური)
   washer     boolean not null default false,
   featured   boolean not null default false,
   note       text,
@@ -89,7 +93,10 @@ insert into public.settings (key, value) values
   ('phone',    '+995 597 32 32 95'),
   ('email',    'keramoartcollection@gmail.com'),
   ('facebook', 'https://www.facebook.com/profile.php?id=61551452274576'),
-  ('hours',    'ორშ–შაბ, 10:00–19:00')
+  ('hours',    'ორშ–შაბ, 10:00–19:00'),
+  ('price_tier1', '850'),   -- 1.2 მ-მდე
+  ('price_tier2', '1250'),  -- 1.2–1.6 მ
+  ('price_wall',  '150')    -- კედელზე მიყენება
 on conflict (key) do nothing;
 
 -- ---------- storage: product photos ----------

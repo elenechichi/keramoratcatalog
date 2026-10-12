@@ -6,7 +6,10 @@
     phone: "+995 597 32 32 95",
     email: "keramoartcollection@gmail.com",
     facebook: "https://www.facebook.com/profile.php?id=61551452274576",
-    hours: "ორშ–შაბ, 10:00–19:00"
+    hours: "ორშ–შაბ, 10:00–19:00",
+    price_tier1: "850",
+    price_tier2: "1250",
+    price_wall: "150"
   };
 
   function fallback() {
@@ -16,7 +19,8 @@
       products: (window.PRODUCTS || []).map(function (p, i) {
         return {
           id: p.id, slug: p.id, name: p.name, category: p.category,
-          material: p.material, color: p.color, size: p.size,
+          material: p.material, color: p.color, size: p.size || null,
+          length_cm: p.length_cm, depth_cm: p.depth_cm, height_cm: p.height_cm || null, price: p.price || null,
           washer: !!p.washer, featured: ["notte-01", "pietraserena-01", "calacatta-01"].indexOf(p.id) !== -1,
           note: p.note, images: ["assets/sinks/" + p.id + ".jpg"], sort: i, published: true
         };

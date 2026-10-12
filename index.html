@@ -3,18 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>KERAMO ART — კერამოგრანიტის სანიჟარეები</title>
-<meta name="description" content="KERAMO ART — პრემიუმ კერამოგრანიტის სანიჟარეები: ჩაშენებული, ორმაგი, პოსტამენტური და სარეცხ მანქანაზე მორგებული მოდელები. ყველა მზადდება ინდივიდუალური ზომით.">
+<title>KERAMO ART — კერამო არტის აბაზანის ნიჟარები</title>
+<meta name="description" content="კერამო არტის აბაზანის ნიჟარები კერამოგრანიტისგან: ჩაშენებული, ორმაგი, პოსტამენტური და სარეცხ მანქანაზე მორგებული. 1.2 მეტრამდე — 850 ₾, 1.2–1.6 მეტრი — 1250 ₾.">
 <meta name="theme-color" content="#211d1a">
-<meta property="og:title" content="KERAMO ART — კერამოგრანიტის სანიჟარეები">
-<meta property="og:description" content="დიზაინი, რომელიც სივრცეს ხასიათს სძენს. ნახეთ ჩვენი განხორციელებული პროექტები.">
+<meta property="og:title" content="KERAMO ART — აბაზანის ნიჟარები კერამოგრანიტისგან">
+<meta property="og:description" content="დიზაინი, რომელიც სივრცეს ხასიათს სძენს. 1.2 მეტრამდე ნებისმიერი ზომის ნიჟარა — 850 ₾.">
 <meta property="og:image" content="https://keramoart.com.ge/assets/sinks/notte-01.jpg">
 <meta property="og:url" content="https://keramoart.com.ge/">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
-<link rel="stylesheet" href="css/style.css?v=2">
+<link rel="preload" href="assets/fonts/bpg-nino-mtavruli-bold.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="assets/fonts/ar-archy-semibold.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=3">
 </head>
-<body>
+<body class="is-loading">
+
+<!-- intro -->
+<div class="intro" id="intro" aria-hidden="true">
+  <svg class="intro-mark" viewBox="0 0 120 100">
+    <path class="r1" d="M8 50 L60 6 L112 50"/>
+    <path class="r2" d="M22 94 L22 58 L60 26 L98 58 L98 94"/>
+    <path class="r3" d="M34 94 L34 64 L60 42 L86 64 L86 94"/>
+  </svg>
+  <div class="intro-word"><span>K</span><span>E</span><span>R</span><span>A</span><span>M</span><span>O</span><span>&nbsp;</span><span>A</span><span>R</span><span>T</span></div>
+</div>
+
+<div class="scroll-progress" id="scroll-progress"></div>
 
 <header class="site-header" id="site-header">
   <div class="wrap">
@@ -24,10 +38,10 @@
     </a>
     <nav class="main-nav" id="main-nav">
       <a href="#catalog">კატალოგი</a>
-      <a href="#about">ბრენდი</a>
-      <a href="#process">შეკვეთის პროცესი</a>
+      <a href="#prices">ფასები</a>
+      <a href="#process">შეკვეთა</a>
       <a href="#contact">კონტაქტი</a>
-      <a href="#contact" class="btn nav-cta">მოთხოვნის გაგზავნა</a>
+      <a href="#contact" class="btn nav-cta magnetic">მოთხოვნის გაგზავნა</a>
     </nav>
     <button class="nav-toggle" id="nav-toggle" type="button" aria-label="მენიუ" aria-expanded="false" aria-controls="main-nav">
       <span></span><span></span><span></span>
@@ -37,67 +51,76 @@
 
 <main id="top">
 
-  <section class="hero">
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
     <div class="wrap">
-      <div class="hero-copy reveal">
-        <p class="hero-eyebrow">დიზაინი, რომელიც სივრცეს ხასიათს სძენს</p>
-        <h1>კერამოგრანიტის სანიჟარეები — <span class="accent-word">თქვენს ზომაზე</span></h1>
-        <p class="lede">ჩაშენებული, ორმაგი, პოსტამენტური და სარეცხ მანქანაზე მორგებული ნიჟარები. ქვემოთ ჩვენი უკვე განხორციელებული პროექტებია — თითოეული მზადდება ინდივიდუალურად, ადგილზე აზომვის შემდეგ.</p>
-        <div class="hero-actions">
-          <a href="#catalog" class="btn btn-primary">კატალოგის ნახვა</a>
-          <a href="#contact" class="btn btn-ghost">უფასო კონსულტაცია</a>
+      <div class="hero-copy">
+        <p class="hero-eyebrow anim-up" style="--d:.05s">დიზაინი, რომელიც სივრცეს ხასიათს სძენს</p>
+        <h1 class="hero-title">
+          <span class="line"><span>კერამო არტის</span></span>
+          <span class="line"><span>აბაზანის</span></span>
+          <span class="line"><span class="accent-word">ნიჟარები</span></span>
+        </h1>
+        <p class="lede anim-up" style="--d:.55s">კერამოგრანიტის ნიჟარები, რომლებიც მზადდება ზუსტად თქვენს ზომაზე — ჩაშენებული, ორმაგი, პოსტამენტური და სარეცხ მანქანაზე მორგებული.</p>
+        <div class="hero-price anim-up" style="--d:.65s">
+          <span class="hp-label">ფასი</span>
+          <span class="hp-value"><b>850</b> ₾-დან</span>
+          <span class="hp-note">1.2 მეტრამდე ნებისმიერი ზომა</span>
         </div>
-        <div class="hero-stats">
-          <div class="hero-stat"><span class="num" id="stat-products">17</span><span class="label">განხორციელებული პროექტი</span></div>
-          <div class="hero-stat"><span class="num" id="stat-categories">5</span><span class="label">კატეგორია</span></div>
-          <div class="hero-stat"><span class="num">100%</span><span class="label">ინდივიდუალური ზომა</span></div>
+        <div class="hero-actions anim-up" style="--d:.75s">
+          <a href="#catalog" class="btn btn-primary magnetic"><span>კატალოგის ნახვა</span></a>
+          <a href="#prices" class="btn btn-ghost magnetic"><span>ფასის გამოთვლა</span></a>
+        </div>
+        <div class="hero-stats anim-up" style="--d:.85s">
+          <div class="hero-stat"><span class="num" data-count="17" id="stat-products">0</span><span class="label">განხორციელებული პროექტი</span></div>
+          <div class="hero-stat"><span class="num" data-count="5" id="stat-categories">0</span><span class="label">კატეგორია</span></div>
+          <div class="hero-stat"><span class="num" data-count="100" data-suffix="%">0</span><span class="label">ინდივიდუალური ზომა</span></div>
         </div>
       </div>
       <div class="hero-mosaic" id="hero-mosaic" aria-hidden="true">
-        <div class="m m1"><img src="assets/sinks/notte-01.jpg" alt=""></div>
-        <div class="m m2"><img src="assets/sinks/calacatta-01.jpg" alt=""></div>
-        <div class="m m3"><img src="assets/sinks/pietraserena-01.jpg" alt=""></div>
+        <div class="m m1" data-depth="18"><img src="assets/sinks/notte-01.jpg" alt=""></div>
+        <div class="m m2" data-depth="30"><img src="assets/sinks/calacatta-01.jpg" alt=""></div>
+        <div class="m m3" data-depth="24"><img src="assets/sinks/pietraserena-01.jpg" alt=""></div>
+        <div class="price-badge" data-depth="40"><span>1.2 მ-მდე</span><b>850 ₾</b></div>
         <svg class="mosaic-mark" viewBox="0 0 120 100"><path d="M60 6 L112 50 L100 50 L60 16 L20 50 L8 50 Z"/></svg>
       </div>
     </div>
+    <a href="#marquee" class="scroll-cue" aria-label="ქვემოთ"><span></span></a>
   </section>
 
+  <!-- MARQUEE -->
+  <div class="marquee" id="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>კერამოგრანიტი</span><i>✦</i><span>ინდივიდუალური ზომა</span><i>✦</i><span>აზომვა ადგილზე</span><i>✦</i><span>850 ₾-დან</span><i>✦</i><span>სარეცხ მანქანაზე მორგება</span><i>✦</i>
+      <span>კერამოგრანიტი</span><i>✦</i><span>ინდივიდუალური ზომა</span><i>✦</i><span>აზომვა ადგილზე</span><i>✦</i><span>850 ₾-დან</span><i>✦</i><span>სარეცხ მანქანაზე მორგება</span><i>✦</i>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
   <section id="about" class="about-section">
-    <div class="wrap about reveal">
-      <p class="lede-large">KERAMO ART აპროექტებს და ამზადებს <em>სანიჟარეებს</em>, რომლებიც აბაზანის ინტერიერის მთავარ დეტალად იქცევა — ყოველი ნიმუში ქვემოთ უკვე განხორციელებული პროექტია, შექმნილი კონკრეტული სივრცისთვის.</p>
+    <div class="wrap about">
+      <p class="lede-large reveal">KERAMO ART აპროექტებს და ამზადებს <em>აბაზანის ნიჟარებს</em>, რომლებიც ინტერიერის მთავარ დეტალად იქცევა — ყოველი ნიმუში ქვემოთ უკვე განხორციელებული პროექტია.</p>
       <ul class="about-points">
-        <li><span class="ap-num">01</span><div><strong>მასალა</strong><span>კერამოგრანიტი და მარმარილოს ეფექტის ზედაპირები — მდგრადი, არ კარგავს ფერს და წლების განმავლობაში ინარჩუნებს სახეს.</span></div></li>
-        <li><span class="ap-num">02</span><div><strong>ზომა</strong><span>ყოველი ნიჟარა მზადდება თქვენი აბაზანის ან სარეცხი მანქანის ზუსტ ზომაზე — სტანდარტული ზომები არ გვაქვს.</span></div></li>
-        <li><span class="ap-num">03</span><div><strong>ინდივიდუალური დიზაინი</strong><span>დაგეხმარებით ფორმის, ფერისა და მასალის შერჩევაში კონკრეტული ინტერიერისთვის — უფასო კონსულტაცია.</span></div></li>
+        <li class="reveal" style="--d:.05s"><span class="ap-num">01</span><div><strong>მასალა</strong><span>კერამოგრანიტი და მარმარილოს ეფექტის ზედაპირები — მდგრადი, არ კარგავს ფერს და წლების განმავლობაში ინარჩუნებს სახეს.</span></div></li>
+        <li class="reveal" style="--d:.15s"><span class="ap-num">02</span><div><strong>ზომა</strong><span>ყოველი ნიჟარა მზადდება თქვენი აბაზანის ან სარეცხი მანქანის ზუსტ ზომაზე.</span></div></li>
+        <li class="reveal" style="--d:.25s"><span class="ap-num">03</span><div><strong>დიზაინი</strong><span>დაგეხმარებით ფორმის, ფერისა და მასალის შერჩევაში — კონსულტაცია უფასოა.</span></div></li>
       </ul>
     </div>
   </section>
 
-  <section id="washer-feature" class="washer-feature">
-    <div class="wrap washer-feature-grid">
-      <div class="washer-feature-media">
-        <img src="assets/sinks/pietraserena-01.jpg" alt="სარეცხ მანქანაზე მორგებული ნიჟარა" loading="lazy">
-      </div>
-      <div class="washer-feature-copy reveal">
-        <p class="section-tag">ჩვენი გამორჩეული გადაწყვეტა</p>
-        <h2>ნიჟარა, რომელიც სარეცხ მანქანაზეა მორგებული</h2>
-        <p>ვისაც აბაზანაში სარეცხი მანქანა აქვს დგმული, ვთავაზობთ ნიჟარას, რომელიც ზუსტად მანქანის ზომასა და ადგილს ერგება — ერთიანი ხაზი, ერთი მასალა, ყოველგვარი „მიჭედების“ შეგრძნების გარეშე.</p>
-        <button type="button" class="btn btn-primary" id="washer-cta">ამ მოდელების ნახვა</button>
-      </div>
-    </div>
-  </section>
-
+  <!-- CATALOG -->
   <section id="catalog" class="catalog">
     <div class="wrap">
-      <div class="section-head reveal">
+      <div class="section-head">
         <div>
-          <p class="section-tag">სრული კატალოგი</p>
-          <h2>განხორციელებული პროექტები</h2>
+          <p class="section-tag reveal">სრული კატალოგი</p>
+          <h2 class="split-title">განხორციელებული პროექტები</h2>
         </div>
-        <p>დააჭირეთ ნებისმიერ მოდელს — ნახავთ ყველა ფოტოს, სპეციფიკაციას და შეძლებთ მოთხოვნის გაგზავნას.</p>
+        <p class="reveal">ზომები მიახლოებითია, ფოტოს მიხედვით. დააჭირეთ მოდელს — ნახავთ ყველა ფოტოს, ზომას და ფასს.</p>
       </div>
 
-      <div class="filters" role="group" aria-label="კატეგორიის ფილტრი" id="filters"></div>
+      <div class="filters" role="group" aria-label="კატეგორიის ფილტრი" id="filters"><span class="filter-ink" id="filter-ink"></span></div>
       <div class="tile-grid" id="tile-grid" aria-live="polite">
         <div class="tile skeleton"></div><div class="tile skeleton"></div><div class="tile skeleton"></div><div class="tile skeleton"></div>
       </div>
@@ -105,46 +128,120 @@
     </div>
   </section>
 
-  <section id="process">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <div>
-          <p class="section-tag">როგორ მუშაობს</p>
-          <h2>შეკვეთის პროცესი</h2>
-        </div>
-        <p>საიტზე გადახდა არ ხორციელდება — გალერეა სტილის შერჩევაში გეხმარებათ, ყველა ნიჟარა ინდივიდუალურად მზადდება.</p>
+  <!-- WASHER FEATURE -->
+  <section id="washer-feature" class="washer-feature">
+    <div class="wrap washer-feature-grid">
+      <div class="washer-feature-media">
+        <img src="assets/sinks/pietraserena-01.jpg" alt="სარეცხ მანქანაზე მორგებული ნიჟარა" loading="lazy">
       </div>
-      <div class="process-list reveal">
-        <div class="process-item">
-          <div class="step">01</div>
-          <h3>შერჩევა</h3>
-          <p>დაათვალიერეთ გალერეა, შეარჩიეთ სასურველი სტილი და გამოგვიგზავნეთ მოთხოვნა ან დაგვირეკეთ.</p>
+      <div class="washer-feature-copy">
+        <p class="section-tag reveal">ჩვენი გამორჩეული გადაწყვეტა</p>
+        <h2 class="split-title">ნიჟარა სარეცხ მანქანაზე</h2>
+        <p class="reveal">ვისაც აბაზანაში სარეცხი მანქანა აქვს, ვთავაზობთ ნიჟარას, რომელიც ზუსტად მანქანის ზომასა და ადგილს ერგება — ერთიანი ხაზი, ერთი მასალა.</p>
+        <button type="button" class="btn btn-primary magnetic reveal" id="washer-cta"><span>ამ მოდელების ნახვა</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICES -->
+  <section id="prices" class="prices">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="section-tag reveal">გამჭვირვალე ფასები</p>
+          <h2 class="split-title">ფასი ზომის მიხედვით</h2>
         </div>
-        <div class="process-item">
-          <div class="step">02</div>
-          <h3>აზომვა ადგილზე</h3>
-          <p>ჩვენი ბრიგადა მოდის თქვენთან და ატარებს აზომვას — განსაკუთრებით მნიშვნელოვანია სარეცხ მანქანაზე მორგებული ნიჟარებისთვის.</p>
+        <p class="reveal">ფასი დამოკიდებულია მხოლოდ ნიჟარის სიგრძეზე. საბოლოო ზომას ვადგენთ ადგილზე აზომვით.</p>
+      </div>
+
+      <div class="price-cards">
+        <article class="price-card reveal" style="--d:.0s">
+          <p class="pc-range"><span data-price-label="1">1.2 მეტრამდე</span></p>
+          <p class="pc-price"><b data-price="tier1">850</b><span>₾</span></p>
+          <p class="pc-desc">ნებისმიერი ზომის ნიჟარა 120 სმ-მდე — მათ შორის პოსტამენტური.</p>
+          <svg class="pc-sink" viewBox="0 0 200 40"><rect x="40" y="10" width="120" height="20" rx="3"/><rect x="85" y="15" width="30" height="10" rx="2" class="basin"/></svg>
+        </article>
+        <article class="price-card featured reveal" style="--d:.12s">
+          <span class="pc-flag">ყველაზე მოთხოვნადი</span>
+          <p class="pc-range"><span>1.2 – 1.6 მეტრი</span></p>
+          <p class="pc-price"><b data-price="tier2">1250</b><span>₾</span></p>
+          <p class="pc-desc">ნებისმიერი ზომის ნიჟარა 120-დან 160 სმ-მდე — ორმაგი და სარეცხ მანქანაზე მორგებული.</p>
+          <svg class="pc-sink" viewBox="0 0 200 40"><rect x="10" y="10" width="180" height="20" rx="3"/><rect x="45" y="15" width="30" height="10" rx="2" class="basin"/><rect x="125" y="15" width="30" height="10" rx="2" class="basin"/></svg>
+        </article>
+        <article class="price-card addon reveal" style="--d:.24s">
+          <p class="pc-range"><span>დამატებითი მომსახურება</span></p>
+          <p class="pc-price"><small>+</small><b data-price="wall">150</b><span>₾</span></p>
+          <p class="pc-desc">ნიჟარის კედელზე მიყენება (მონტაჟი) ჩვენი ბრიგადის მიერ.</p>
+          <svg class="pc-sink" viewBox="0 0 200 40"><rect x="20" y="4" width="6" height="32" class="wall"/><rect x="26" y="12" width="110" height="16" rx="2"/><path d="M150 20 h30 M170 12 l10 8 -10 8" class="arrow"/></svg>
+        </article>
+      </div>
+
+      <!-- calculator -->
+      <div class="calc reveal" id="calc">
+        <div class="calc-left">
+          <h3>ფასის კალკულატორი</h3>
+          <label for="calc-len" class="calc-label">ნიჟარის სიგრძე: <output id="calc-len-out">100</output> სმ</label>
+          <input type="range" id="calc-len" min="40" max="200" step="5" value="100">
+          <div class="calc-scale"><span>40</span><span>120</span><span>160</span><span>200 სმ</span></div>
+          <label class="calc-check"><input type="checkbox" id="calc-wall"><span class="box"></span> კედელზე მიყენება <b>+<span data-price="wall">150</span> ₾</b></label>
+          <div class="calc-visual" aria-hidden="true">
+            <div class="cv-wall"></div>
+            <div class="cv-sink" id="cv-sink"><span class="cv-basin"></span></div>
+            <div class="cv-ruler" id="cv-ruler"><span id="cv-ruler-label">100 სმ</span></div>
+          </div>
         </div>
-        <div class="process-item">
-          <div class="step">03</div>
-          <h3>ფასი და დამზადება</h3>
-          <p>ფასი დამოკიდებულია ზომაზე, მასალასა და დიზაინზე — აზომვის შემდეგ ვადასტურებთ ღირებულებასა და ვადებს.</p>
+        <div class="calc-right">
+          <p class="calc-total-label">სავარაუდო ფასი</p>
+          <p class="calc-total"><b id="calc-total">850</b><span id="calc-currency"> ₾</span></p>
+          <p class="calc-note" id="calc-note">1.2 მეტრამდე ნებისმიერი ზომა</p>
+          <a href="#contact" class="btn btn-primary magnetic" id="calc-cta"><span>ამ ზომაზე შეკვეთა</span></a>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- PROCESS -->
+  <section id="process" class="process">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="section-tag reveal">როგორ მუშაობს</p>
+          <h2 class="split-title">შეკვეთის პროცესი</h2>
+        </div>
+        <p class="reveal">საიტზე გადახდა არ ხორციელდება — ყველა ნიჟარა ინდივიდუალურად მზადდება.</p>
+      </div>
+      <div class="process-list">
+        <div class="process-item reveal" style="--d:0s">
+          <div class="step">01</div>
+          <h3>შერჩევა</h3>
+          <p>დაათვალიერეთ კატალოგი, შეარჩიეთ სტილი და გამოგვიგზავნეთ მოთხოვნა ან დაგვირეკეთ.</p>
+        </div>
+        <div class="process-item reveal" style="--d:.12s">
+          <div class="step">02</div>
+          <h3>აზომვა ადგილზე</h3>
+          <p>ჩვენი ბრიგადა მოდის თქვენთან და ატარებს ზუსტ აზომვას.</p>
+        </div>
+        <div class="process-item reveal" style="--d:.24s">
+          <div class="step">03</div>
+          <h3>დამზადება და მონტაჟი</h3>
+          <p>ფასი განისაზღვრება სიგრძით. საჭიროების შემთხვევაში ნიჟარას კედელზეც მივაყენებთ.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
   <section id="contact" class="contact">
     <div class="wrap">
       <div class="section-head">
         <div>
-          <p class="section-tag">დაგვიკავშირდით</p>
-          <h2>მოთხოვნის გაგზავნა</h2>
+          <p class="section-tag reveal">დაგვიკავშირდით</p>
+          <h2 class="split-title">მოთხოვნის გაგზავნა</h2>
         </div>
-        <p>შეავსეთ ფორმა ან დაგვიკავშირდით პირდაპირ — გიპასუხებთ უმოკლეს დროში.</p>
+        <p class="reveal">შეავსეთ ფორმა ან დაგვიკავშირდით პირდაპირ — გიპასუხებთ უმოკლეს დროში.</p>
       </div>
       <div class="contact-grid">
-        <div class="contact-info">
+        <div class="contact-info reveal">
           <dl>
             <dt>ტელეფონი</dt>
             <dd><a id="c-phone" href="tel:+995597323295">+995 597 32 32 95</a></dd>
@@ -170,7 +267,7 @@
             </a>
           </div>
         </div>
-        <form id="inquiry-form" novalidate>
+        <form id="inquiry-form" class="reveal" novalidate>
           <div class="form-row">
             <div class="form-field">
               <label for="f-name">სახელი, გვარი</label>
@@ -195,16 +292,22 @@
               </select>
             </div>
           </div>
-          <div class="form-field">
-            <label for="f-product">რომელი ნიმუში მოგწონთ? (არასავალდებულო)</label>
-            <input id="f-product" name="product" type="text" placeholder="მაგ. Nebbia, Pietra Serena...">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="f-product">რომელი მოდელი მოგწონთ?</label>
+              <input id="f-product" name="product" type="text" placeholder="მაგ. Nebbia">
+            </div>
+            <div class="form-field">
+              <label for="f-size">სასურველი სიგრძე (სმ)</label>
+              <input id="f-size" name="size" type="text" inputmode="numeric" placeholder="მაგ. 110">
+            </div>
           </div>
           <div class="form-field">
             <label for="f-message">შეტყობინება</label>
             <textarea id="f-message" name="message" placeholder="დამატებითი დეტალები თქვენი სივრცის შესახებ"></textarea>
           </div>
           <p class="form-error" id="form-error" hidden>გთხოვთ, მიუთითოთ სახელი და ტელეფონი.</p>
-          <button type="submit" class="btn btn-primary">გაგზავნა</button>
+          <button type="submit" class="btn btn-primary magnetic"><span>გაგზავნა</span></button>
         </form>
       </div>
     </div>
@@ -215,7 +318,7 @@
 <footer class="site-footer">
   <div class="wrap">
     <a href="#top" class="brand brand-small"><img src="assets/logo-mark.svg" alt=""><span class="brand-word">KERAMO ART</span></a>
-    <small>© <span id="year"></span> KERAMO ART. ყველა უფლება დაცულია.</small>
+    <small>© <span id="year"></span> KERAMO ART — კერამო არტის აბაზანის ნიჟარები</small>
   </div>
 </footer>
 
@@ -242,15 +345,16 @@
   <div class="panel-body">
     <p class="panel-collection" id="panel-collection"></p>
     <h3 id="panel-title"></h3>
+    <div class="panel-price" id="panel-price"></div>
     <ul class="panel-specs">
+      <li><span class="k">ზომა</span><span id="panel-size"></span></li>
       <li><span class="k">მასალა</span><span id="panel-material"></span></li>
       <li><span class="k">ფერი</span><span id="panel-color"></span></li>
-      <li><span class="k">ზომა</span><span id="panel-size"></span></li>
     </ul>
     <p class="panel-note" id="panel-note"></p>
     <div class="panel-actions">
-      <a href="#contact" class="btn btn-primary" id="panel-inquire">მოთხოვნის გაგზავნა</a>
-      <a href="https://wa.me/995597323295" class="btn btn-outline" id="panel-whatsapp" target="_blank" rel="noopener">WhatsApp-ით კითხვა</a>
+      <a href="#contact" class="btn btn-primary" id="panel-inquire"><span>მოთხოვნის გაგზავნა</span></a>
+      <a href="https://wa.me/995597323295" class="btn btn-outline" id="panel-whatsapp" target="_blank" rel="noopener"><span>WhatsApp-ით კითხვა</span></a>
     </div>
   </div>
 </aside>
@@ -264,9 +368,9 @@
   <span class="g-counter lb-counter" id="lb-counter"></span>
 </div>
 
-<script src="js/config.js?v=2"></script>
-<script src="js/products.js?v=2"></script>
-<script src="js/data.js?v=2"></script>
-<script src="js/app.js?v=2"></script>
+<script src="js/config.js?v=3"></script>
+<script src="js/products.js?v=3"></script>
+<script src="js/data.js?v=3"></script>
+<script src="js/app.js?v=3"></script>
 </body>
 </html>

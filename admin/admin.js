@@ -33,6 +33,19 @@
     var base = String(s || "").toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/[\s_]+/g, "-").replace(/-+/g, "-");
     return (base || "model") + "-" + rid();
   }
+  function intOrNull(v) { var n = parseInt(v, 10); return isNaN(n) ? null : n; }
+  function tierPrice(cm) {
+    var t1 = intOrNull(S.settings.price_tier1) || 850, t2 = intOrNull(S.settings.price_tier2) || 1250;
+    if (!cm) return null;
+    if (cm <= 120) return t1;
+    if (cm <= 160) return t2;
+    return null;
+  }
+  function priceOf(p) { return p.price || tierPrice(p.length_cm); }
+  function sizeOf(p) {
+    var parts = [p.length_cm, p.depth_cm, p.height_cm].filter(Boolean);
+    return parts.length ? parts.join("×") + " სმ" : "ზომა არ არის";
+  }
   function catLabel(id) { var c = S.categories.filter(function (x) { return x.id === id; })[0]; return c ? c.label : "—"; }
   function storagePath(url) {
     var marker = "/storage/v1/object/public/" + BUCKET + "/";
@@ -169,7 +182,7 @@
       return '<div class="prow' + (p.published ? "" : " draft") + '" data-id="' + p.id + '">' +
         '<div class="prow-thumb">' + cover + "</div>" +
         '<div class="prow-main"><strong>' + esc(p.name) + "</strong>" +
-          '<span class="muted">' + esc(catLabel(p.category)) + " · " + (p.images ? p.images.length : 0) + " ფოტო" +
+          '<span class="muted">' + esc(catLabel(p.category)) + " · " + esc(sizeOf(p)) + ' · <b class="price-tag">' + (priceOf(p) ? priceOf(p) + " ₾" : "შეთანხმებით") + "</b> · " + (p.images ? p.images.length : 0) + " ფოტო" +
           (p.featured ? ' · <b class="tag">ბანერში</b>' : "") + (p.washer ? ' · <b class="tag">სარეცხ მანქ.</b>' : "") + "</span></div>" +
         '<label class="switch" title="საიტზე გამოქვეყნება"><input type="checkbox" data-act="pub"' + (p.published ? " checked" : "") + '><span></span><em>' + (p.published ? "ჩანს" : "დამალულია") + "</em></label>" +
         '<div class="prow-order">' +
@@ -240,12 +253,17 @@
     form.material.value = p ? (p.material || "") : "კერამოგრანიტი";
     form.color.value = p ? (p.color || "") : "";
     form.size.value = p ? (p.size || "") : "";
+    form.length_cm.value = p && p.length_cm ? p.length_cm : "";
+    form.depth_cm.value = p && p.depth_cm ? p.depth_cm : "";
+    form.height_cm.value = p && p.height_cm ? p.height_cm : "";
+    form.price.value = p && p.price ? p.price : "";
     form.note.value = p ? (p.note || "") : "";
     form.washer.checked = p ? !!p.washer : false;
     form.featured.checked = p ? !!p.featured : false;
     form.published.checked = p ? !!p.published : true;
     $("delete-product-btn").hidden = !p;
     renderPhotos();
+    updatePricePreview();
     $("editor-overlay").hidden = false;
     $("editor").classList.add("open");
     $("editor").setAttribute("aria-hidden", "false");
@@ -262,6 +280,19 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && $("editor").classList.contains("open")) closeEditor();
   });
+
+  function updatePricePreview() {
+    var cm = intOrNull(form.length_cm.value), manual = intOrNull(form.price.value), auto = tierPrice(cm);
+    var wall = intOrNull(S.settings.price_wall) || 150;
+    var html;
+    if (manual) html = "საიტზე ფასი: <b>" + manual + " ₾</b> (ხელით მითითებული)";
+    else if (auto) html = "საიტზე ფასი: <b>" + auto + " ₾</b> — ავტომატურად, " + (cm <= 120 ? "1.2 მ-მდე" : "1.2–1.6 მ") + " · კედელზე მიყენება +" + wall + " ₾";
+    else if (cm) html = "1.6 მეტრზე მეტია — საიტზე ეწერება <b>„ფასი შეთანხმებით“</b>, ან მიუთითეთ ფასი ხელით.";
+    else html = "მიუთითეთ სიგრძე — ფასი ავტომატურად გამოითვლება.";
+    $("price-preview").innerHTML = html;
+  }
+  form.length_cm.addEventListener("input", updatePricePreview);
+  form.price.addEventListener("input", updatePricePreview);
 
   // photos
   function renderPhotos() {
@@ -382,6 +413,10 @@
           material: form.material.value.trim() || null,
           color: form.color.value.trim() || null,
           size: form.size.value.trim() || null,
+          length_cm: intOrNull(form.length_cm.value),
+          depth_cm: intOrNull(form.depth_cm.value),
+          height_cm: intOrNull(form.height_cm.value),
+          price: intOrNull(form.price.value),
           note: form.note.value.trim() || null,
           washer: form.washer.checked,
           featured: form.featured.checked,
@@ -482,16 +517,17 @@
   // ---------- settings ----------
   function renderSettings() {
     var f = $("settings-form");
-    ["phone", "whatsapp", "email", "facebook", "hours"].forEach(function (k) { f[k].value = S.settings[k] || ""; });
+    ["phone", "whatsapp", "email", "facebook", "hours", "price_tier1", "price_tier2", "price_wall"].forEach(function (k) { f[k].value = S.settings[k] || ""; });
   }
   $("settings-form").addEventListener("submit", function (e) {
     e.preventDefault();
     var f = e.target;
-    var rows = ["phone", "whatsapp", "email", "facebook", "hours"].map(function (k) { return { key: k, value: f[k].value.trim() }; });
+    var rows = ["phone", "whatsapp", "email", "facebook", "hours", "price_tier1", "price_tier2", "price_wall"].map(function (k) { return { key: k, value: f[k].value.trim() }; });
     sb.from("settings").upsert(rows).then(function (r) {
       if (r.error) return fail(r.error);
       rows.forEach(function (row) { S.settings[row.key] = row.value; });
-      toast("კონტაქტები შენახულია", "ok");
+      renderProducts();
+      toast("შენახულია", "ok");
     });
   });
 })();
