@@ -14,7 +14,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
 <link rel="preload" href="assets/fonts/bpg-nino-mtavruli-bold.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="assets/fonts/ar-archy-semibold.woff" as="font" type="font/woff" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body class="is-loading">
 
@@ -66,7 +66,7 @@
         <div class="hero-price anim-up" style="--d:.65s">
           <span class="hp-label">ფასი</span>
           <span class="hp-value"><b>850</b> ₾-დან</span>
-          <span class="hp-note">1.2 მეტრამდე ნებისმიერი ზომა</span>
+          <span class="hp-note">1.2 მეტრამდე ნებისმიერი ზომა · მთელ საქართველოში</span>
         </div>
         <div class="hero-actions anim-up" style="--d:.75s">
           <a href="#catalog" class="btn btn-primary magnetic"><span>კატალოგის ნახვა</span></a>
@@ -75,7 +75,7 @@
         <div class="hero-stats anim-up" style="--d:.85s">
           <div class="hero-stat"><span class="num" data-count="17" id="stat-products">0</span><span class="label">განხორციელებული პროექტი</span></div>
           <div class="hero-stat"><span class="num" data-count="5" id="stat-categories">0</span><span class="label">კატეგორია</span></div>
-          <div class="hero-stat"><span class="num" data-count="100" data-suffix="%">0</span><span class="label">ინდივიდუალური ზომა</span></div>
+          <div class="hero-stat"><span class="num" data-count="24" data-suffix="/7">0</span><span class="label">ვმუშაობთ ყოველდღე</span></div>
         </div>
       </div>
       <div class="hero-mosaic" id="hero-mosaic" aria-hidden="true">
@@ -83,6 +83,7 @@
         <div class="m m2" data-depth="30"><img src="assets/sinks/calacatta-01.jpg" alt=""></div>
         <div class="m m3" data-depth="24"><img src="assets/sinks/pietraserena-01.jpg" alt=""></div>
         <div class="price-badge" data-depth="40"><span>1.2 მ-მდე</span><b>850 ₾</b></div>
+        <div class="hero-dots" id="hero-dots"></div>
         <svg class="mosaic-mark" viewBox="0 0 120 100"><path d="M60 6 L112 50 L100 50 L60 16 L20 50 L8 50 Z"/></svg>
       </div>
     </div>
@@ -92,8 +93,8 @@
   <!-- MARQUEE -->
   <div class="marquee" id="marquee" aria-hidden="true">
     <div class="marquee-track">
-      <span>კერამოგრანიტი</span><i>✦</i><span>ინდივიდუალური ზომა</span><i>✦</i><span>აზომვა ადგილზე</span><i>✦</i><span>850 ₾-დან</span><i>✦</i><span>სარეცხ მანქანაზე მორგება</span><i>✦</i>
-      <span>კერამოგრანიტი</span><i>✦</i><span>ინდივიდუალური ზომა</span><i>✦</i><span>აზომვა ადგილზე</span><i>✦</i><span>850 ₾-დან</span><i>✦</i><span>სარეცხ მანქანაზე მორგება</span><i>✦</i>
+      <span>კერამოგრანიტი</span><i>✦</i><span>ინდივიდუალური ზომა</span><i>✦</i><span>მთელ საქართველოში</span><i>✦</i><span>24/7</span><i>✦</i><span>850 ₾-დან</span><i>✦</i><span>სარეცხ მანქანაზე მორგება</span><i>✦</i>
+      <span>კერამოგრანიტი</span><i>✦</i><span>ინდივიდუალური ზომა</span><i>✦</i><span>მთელ საქართველოში</span><i>✦</i><span>24/7</span><i>✦</i><span>850 ₾-დან</span><i>✦</i><span>სარეცხ მანქანაზე მორგება</span><i>✦</i>
     </div>
   </div>
 
@@ -219,7 +220,7 @@
         <div class="process-item reveal" style="--d:.12s">
           <div class="step">02</div>
           <h3>აზომვა ადგილზე</h3>
-          <p>ჩვენი ბრიგადა მოდის თქვენთან და ატარებს ზუსტ აზომვას.</p>
+          <p>ჩვენი ბრიგადა მოდის თქვენთან მთელი საქართველოს მასშტაბით და ატარებს ზუსტ აზომვას.</p>
         </div>
         <div class="process-item reveal" style="--d:.24s">
           <div class="step">03</div>
@@ -238,7 +239,7 @@
           <p class="section-tag reveal">დაგვიკავშირდით</p>
           <h2 class="split-title">მოთხოვნის გაგზავნა</h2>
         </div>
-        <p class="reveal">შეავსეთ ფორმა ან დაგვიკავშირდით პირდაპირ — გიპასუხებთ უმოკლეს დროში.</p>
+        <p class="reveal">ვმუშაობთ ყოველდღე, 24 საათი — შეავსეთ ფორმა ან დაგვიკავშირდით პირდაპირ. ვემსახურებით მთელ საქართველოს.</p>
       </div>
       <div class="contact-grid">
         <div class="contact-info reveal">
@@ -250,7 +251,9 @@
             <dt>Facebook</dt>
             <dd><a id="c-facebook" href="https://www.facebook.com/profile.php?id=61551452274576" target="_blank" rel="noopener">KERAMO ART — ნამუშევრები</a></dd>
             <dt>სამუშაო საათები</dt>
-            <dd id="c-hours">ორშ–შაბ, 10:00–19:00</dd>
+            <dd id="c-hours">ყოველდღე, 24 საათი — კვირის ყველა დღე</dd>
+            <dt>მომსახურების არეალი</dt>
+            <dd id="c-area">მთელი საქართველო — აზომვა და მონტაჟი ნებისმიერ ქალაქში</dd>
           </dl>
           <div class="quick-contact">
             <a class="qc" id="qc-call" href="tel:+995597323295">
@@ -288,7 +291,7 @@
               <select id="f-city" name="city">
                 <option value="">აირჩიეთ ქალაქი</option>
                 <option>თბილისი</option><option>ბათუმი</option><option>ქუთაისი</option><option>რუსთავი</option>
-                <option>გორი</option><option>ზუგდიდი</option><option>თელავი</option><option value="სხვა">სხვა ქალაქი</option>
+                <option>გორი</option><option>ზუგდიდი</option><option>თელავი</option><option>ფოთი</option><option>ზესტაფონი</option><option>ხაშური</option><option>ოზურგეთი</option><option>ახალციხე</option><option>მცხეთა</option><option>ქობულეთი</option><option value="სხვა">სხვა ქალაქი / სოფელი</option>
               </select>
             </div>
           </div>
@@ -322,13 +325,16 @@
   </div>
 </footer>
 
-<a class="fab-call" id="fab-call" href="tel:+995597323295" aria-label="დარეკვა">
-  <svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg>
-</a>
+<nav class="mbar" id="mbar" aria-label="სწრაფი კავშირი">
+  <a id="fab-call" href="tel:+995597323295"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg>დარეკვა</a>
+  <a id="mbar-wa" href="https://wa.me/995597323295" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.7-.1 1.2z"/></svg>WhatsApp</a>
+  <a href="#prices" class="mbar-main"><b>850 ₾</b>ფასის გამოთვლა</a>
+</nav>
 
 <!-- Product panel -->
 <div class="panel-overlay" id="panel-overlay"></div>
 <aside class="panel" id="product-panel" aria-hidden="true" aria-labelledby="panel-title" role="dialog">
+  <span class="sheet-handle" id="sheet-handle" aria-hidden="true"></span>
   <button class="panel-close" id="panel-close" aria-label="დახურვა">&times;</button>
   <div class="gallery" id="gallery">
     <div class="gallery-main">
@@ -368,9 +374,9 @@
   <span class="g-counter lb-counter" id="lb-counter"></span>
 </div>
 
-<script src="js/config.js?v=3"></script>
-<script src="js/products.js?v=3"></script>
-<script src="js/data.js?v=3"></script>
-<script src="js/app.js?v=3"></script>
+<script src="js/config.js?v=4"></script>
+<script src="js/products.js?v=4"></script>
+<script src="js/data.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
 </body>
 </html>

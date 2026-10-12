@@ -6,7 +6,8 @@
     phone: "+995 597 32 32 95",
     email: "keramoartcollection@gmail.com",
     facebook: "https://www.facebook.com/profile.php?id=61551452274576",
-    hours: "ორშ–შაბ, 10:00–19:00",
+    hours: "ყოველდღე, 24 საათი — კვირის ყველა დღე",
+    area: "მთელი საქართველო",
     price_tier1: "850",
     price_tier2: "1250",
     price_wall: "150"

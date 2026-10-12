@@ -183,7 +183,8 @@
         '<div class="prow-thumb">' + cover + "</div>" +
         '<div class="prow-main"><strong>' + esc(p.name) + "</strong>" +
           '<span class="muted">' + esc(catLabel(p.category)) + " · " + esc(sizeOf(p)) + ' · <b class="price-tag">' + (priceOf(p) ? priceOf(p) + " ₾" : "შეთანხმებით") + "</b> · " + (p.images ? p.images.length : 0) + " ფოტო" +
-          (p.featured ? ' · <b class="tag">ბანერში</b>' : "") + (p.washer ? ' · <b class="tag">სარეცხ მანქ.</b>' : "") + "</span></div>" +
+          (p.featured ? ' · <b class="tag">ბანერში</b>' : "") + (p.washer ? ' · <b class="tag">სარეცხ მანქ.</b>' : "") +
+          (productMissing(p).length ? '<br><b class="warn-tag">⚠ არასრული: ' + productMissing(p).map(function (m) { return m.label; }).join(", ") + "</b>" : "") + "</span></div>" +
         '<label class="switch" title="საიტზე გამოქვეყნება"><input type="checkbox" data-act="pub"' + (p.published ? " checked" : "") + '><span></span><em>' + (p.published ? "ჩანს" : "დამალულია") + "</em></label>" +
         '<div class="prow-order">' +
           '<button class="icon-btn" data-act="up" title="ზემოთ"' + (filtered || idx === 0 ? " disabled" : "") + ">↑</button>" +
@@ -208,6 +209,12 @@
     var id = e.target.closest(".prow").dataset.id;
     var p = S.products.filter(function (x) { return x.id === id; })[0];
     var val = e.target.checked;
+    if (val && productMissing(p).length) {
+      e.target.checked = false;
+      toast("ჯერ შეავსეთ: " + productMissing(p).map(function (m) { return m.label; }).join(", "), "err");
+      openEditor(p);
+      return;
+    }
     sb.from("products").update({ published: val }).eq("id", id).then(function (r) {
       if (r.error) return fail(r.error);
       p.published = val; renderProducts();
@@ -262,6 +269,7 @@
     form.featured.checked = p ? !!p.featured : false;
     form.published.checked = p ? !!p.published : true;
     $("delete-product-btn").hidden = !p;
+    Array.prototype.forEach.call(form.querySelectorAll("[data-field]"), function (el) { delete el.dataset.touched; el.classList.remove("invalid"); });
     renderPhotos();
     updatePricePreview();
     $("editor-overlay").hidden = false;
@@ -309,6 +317,7 @@
           '<button type="button" class="icon-btn danger" data-ph="del" title="წაშლა">✕</button>' +
         "</div></div>";
     }).join("");
+    if ($("req-list")) renderRequirements(false);
   }
 
   $("photos").addEventListener("click", function (e) {
@@ -395,10 +404,117 @@
     }, Promise.resolve());
   }
 
+
+  // ---------- required fields ----------
+  var REQUIRED = [
+    { key: "photos",    label: "ფოტო (მინ. 1)" },
+    { key: "name",      label: "სახელი" },
+    { key: "category",  label: "კატეგორია" },
+    { key: "material",  label: "მასალა" },
+    { key: "color",     label: "ფერი" },
+    { key: "length_cm", label: "სიგრძე" },
+    { key: "depth_cm",  label: "სიღრმე" },
+    { key: "height_cm", label: "სიმაღლე", when: function (v) { return v.category === "pedestal"; } }
+  ];
+
+  function formValues() {
+    return {
+      photos: S.photos.length,
+      name: form.name.value.trim(),
+      category: form.category.value,
+      material: form.material.value.trim(),
+      color: form.color.value.trim(),
+      length_cm: intOrNull(form.length_cm.value),
+      depth_cm: intOrNull(form.depth_cm.value),
+      height_cm: intOrNull(form.height_cm.value)
+    };
+  }
+
+  function fieldOk(key, v) {
+    var x = v[key];
+    if (key === "photos") return x > 0;
+    if (key === "length_cm") return x >= 20 && x <= 400;
+    if (key === "depth_cm") return x >= 15 && x <= 150;
+    if (key === "height_cm") return x >= 20 && x <= 200;
+    return !!x;
+  }
+
+  function missingFields(v) {
+    return REQUIRED.filter(function (r) { return (!r.when || r.when(v)) && !fieldOk(r.key, v); });
+  }
+
+  // product object from DB -> is it complete for the site?
+  function productMissing(p) {
+    var v = { photos: (p.images || []).length, name: p.name, category: p.category, material: p.material,
+              color: p.color, length_cm: p.length_cm, depth_cm: p.depth_cm, height_cm: p.height_cm };
+    return missingFields(v);
+  }
+
+  function renderRequirements(showErrors) {
+    var v = formValues(), active = REQUIRED.filter(function (r) { return !r.when || r.when(v); });
+    var miss = missingFields(v);
+    var missKeys = miss.map(function (m) { return m.key; });
+    $("req-list").innerHTML = active.map(function (r) {
+      return '<li data-go="' + r.key + '" class="' + (missKeys.indexOf(r.key) === -1 ? "done" : "todo") + '">' + r.label + "</li>";
+    }).join("");
+    $("req-count").textContent = (active.length - miss.length) + " / " + active.length;
+    $("req-box").classList.toggle("ok", miss.length === 0);
+    Array.prototype.forEach.call(form.querySelectorAll("[data-field]"), function (el) {
+      var k = el.dataset.field;
+      var bad = missKeys.indexOf(k) !== -1;
+      el.classList.toggle("invalid", !!(showErrors || el.dataset.touched) && bad);
+    });
+    renderCardPreview(v);
+    return miss;
+  }
+
+  $("req-list").addEventListener("click", function (e) {
+    var li = e.target.closest("[data-go]"); if (!li) return;
+    var el = form.querySelector('[data-field="' + li.dataset.go + '"]');
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    var inp = el.querySelector("input:not([type=file]), select");
+    if (inp) setTimeout(function () { inp.focus(); }, 300);
+  });
+
+  form.addEventListener("input", function (e) {
+    var f = e.target.closest("[data-field]"); if (f) f.dataset.touched = "1";
+    renderRequirements(false);
+  });
+  form.addEventListener("change", function () { renderRequirements(false); });
+
+  function renderCardPreview(v) {
+    var cm = v.length_cm, manual = intOrNull(form.price.value), price = manual || tierPrice(cm);
+    var cover = S.photos[0] ? (S.photos[0].preview || imgUrl(S.photos[0].url)) : null;
+    var size = [v.length_cm, v.depth_cm, v.height_cm].filter(Boolean);
+    $("card-preview").innerHTML =
+      '<div class="cp-media">' + (cover ? '<img src="' + esc(cover) + '" alt="">' : "ფოტო არ არის<br>დაამატეთ მინ. 1 ფოტო") +
+        (form.washer.checked ? '<span class="cp-badge">სარეცხ მანქანაზე</span>' : "") +
+        '<span class="cp-price">' + (price ? "<small>ფასი</small>" + price + " ₾" : "<small>ფასი</small>შეთანხმებით") + "</span>" +
+      "</div>" +
+      '<div class="cp-body">' +
+        '<p class="cp-cat">' + esc(v.category ? catLabel(v.category) : "კატეგორია ?") + "</p>" +
+        '<p class="cp-name">' + esc(v.name || "მოდელის სახელი") + "</p>" +
+        '<div class="cp-meta"><span class="size' + (size.length < 2 ? " cp-missing" : "") + '">' + (size.length ? "≈ " + size.join(" × ") + " სმ" : "ზომა ?") + "</span>" +
+        '<span' + (v.material ? "" : ' class="cp-missing"') + ">" + esc(v.material || "მასალა ?") + "</span></div>" +
+      "</div>";
+  }
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var name = form.name.value.trim();
-    if (!name) { form.name.focus(); return; }
+    var miss = renderRequirements(true);
+    if (miss.length) {
+      var first = form.querySelector('[data-field="' + miss[0].key + '"]');
+      if (first) {
+        first.scrollIntoView({ behavior: "smooth", block: "center" });
+        first.classList.remove("shake"); void first.offsetWidth; first.classList.add("shake");
+        var inp = first.querySelector("input:not([type=file]), select"); if (inp) setTimeout(function () { inp.focus(); }, 300);
+      }
+      $("req-box").scrollIntoView({ behavior: "smooth", block: "start" });
+      toast("შეავსეთ სავალდებულო ველები: " + miss.map(function (m) { return m.label; }).join(", "), "err");
+      return;
+    }
     var btn = $("save-product-btn");
     btn.disabled = true;
     var p = S.editing;
@@ -517,12 +633,12 @@
   // ---------- settings ----------
   function renderSettings() {
     var f = $("settings-form");
-    ["phone", "whatsapp", "email", "facebook", "hours", "price_tier1", "price_tier2", "price_wall"].forEach(function (k) { f[k].value = S.settings[k] || ""; });
+    ["phone", "whatsapp", "email", "facebook", "hours", "area", "price_tier1", "price_tier2", "price_wall"].forEach(function (k) { f[k].value = S.settings[k] || ""; });
   }
   $("settings-form").addEventListener("submit", function (e) {
     e.preventDefault();
     var f = e.target;
-    var rows = ["phone", "whatsapp", "email", "facebook", "hours", "price_tier1", "price_tier2", "price_wall"].map(function (k) { return { key: k, value: f[k].value.trim() }; });
+    var rows = ["phone", "whatsapp", "email", "facebook", "hours", "area", "price_tier1", "price_tier2", "price_wall"].map(function (k) { return { key: k, value: f[k].value.trim() }; });
     sb.from("settings").upsert(rows).then(function (r) {
       if (r.error) return fail(r.error);
       rows.forEach(function (row) { S.settings[row.key] = row.value; });

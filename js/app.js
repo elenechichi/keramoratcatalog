@@ -326,7 +326,7 @@
     };
 
     lastFocused = document.activeElement;
-    panel.classList.add("open"); overlay.classList.add("open");
+    panel.classList.add("open"); overlay.classList.add("open"); document.body.classList.add("panel-open");
     panel.setAttribute("aria-hidden", "false");
     panel.scrollTop = 0;
     panelClose.focus();
@@ -334,7 +334,7 @@
   }
 
   function closePanel() {
-    panel.classList.remove("open"); overlay.classList.remove("open");
+    panel.classList.remove("open"); overlay.classList.remove("open"); document.body.classList.remove("panel-open");
     panel.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
     if (lastFocused) lastFocused.focus();
@@ -449,11 +449,13 @@
     $("c-email").textContent = s.email; $("c-email").href = "mailto:" + s.email;
     $("c-facebook").href = s.facebook;
     $("c-hours").textContent = s.hours;
-    $("qc-whatsapp").href = "https://wa.me/" + waNumber();
+    if (s.area) $("c-area").textContent = s.area + " — აზომვა და მონტაჟი ნებისმიერ ქალაქში";
+    $("qc-whatsapp").href = $("mbar-wa").href = "https://wa.me/" + waNumber();
     $("qc-viber").href = "viber://chat?number=%2B" + waNumber();
     $$('[data-price="tier1"]').forEach(function (e) { e.textContent = fmt(t.t1); });
     $$('[data-price="tier2"]').forEach(function (e) { e.textContent = fmt(t.t2); });
     $$('[data-price="wall"]').forEach(function (e) { e.textContent = fmt(t.wall); });
+    $$(".mbar-main b").forEach(function (e) { e.textContent = fmt(t.t1) + " ₾-დან"; });
     $$(".hp-value b, .price-badge b").forEach(function (e) { e.textContent = e.closest(".price-badge") ? fmt(t.t1) + " ₾" : fmt(t.t1); });
   }
   function fillTypeSelect() {
@@ -509,6 +511,61 @@
 
   $("year").textContent = new Date().getFullYear();
 
+
+  // ================= MOBILE =================
+  var mq = window.matchMedia("(max-width: 980px)");
+
+  // hero: on phones the mosaic becomes an auto-playing slideshow
+  var slideTimer = null;
+  function setupHeroSlides() {
+    var slides = $$("#hero-mosaic .m");
+    clearInterval(slideTimer);
+    slides.forEach(function (sl) { sl.classList.remove("active", "leaving"); });
+    if (!mq.matches || reduceMotion || slides.length < 2) return;
+    var i = 0;
+    slides[0].classList.add("active");
+    var dots = $("hero-dots");
+    if (dots) dots.innerHTML = slides.map(function (_, k) { return "<i" + (k === 0 ? ' class="on"' : "") + "></i>"; }).join("");
+    slideTimer = setInterval(function () {
+      var cur = slides[i]; i = (i + 1) % slides.length;
+      cur.classList.remove("active"); cur.classList.add("leaving");
+      setTimeout(function () { cur.classList.remove("leaving"); }, 1200);
+      slides[i].classList.add("active");
+      if (dots) $$("i", dots).forEach(function (d, k) { d.classList.toggle("on", k === i); });
+    }, 3600);
+  }
+  if (mq.addEventListener) mq.addEventListener("change", setupHeroSlides);
+
+  // bottom bar: hide while scrolling down, show when scrolling up / near contact
+  var mbar = $("mbar"), lastY = window.scrollY;
+  window.addEventListener("scroll", function () {
+    if (!mq.matches) return;
+    var y = window.scrollY, down = y > lastY + 4, up = y < lastY - 4;
+    if (down && y > 300) mbar.classList.add("hide");
+    if (up || y < 300) mbar.classList.remove("hide");
+    lastY = y;
+  }, { passive: true });
+
+  // panel as bottom sheet: swipe down on the handle/top to close
+  (function () {
+    var y0 = null, dy = 0;
+    panel.addEventListener("touchstart", function (e) {
+      if (!mq.matches || panel.scrollTop > 0) { y0 = null; return; }
+      y0 = e.touches[0].clientY; dy = 0;
+    }, { passive: true });
+    panel.addEventListener("touchmove", function (e) {
+      if (y0 === null) return;
+      dy = Math.max(0, e.touches[0].clientY - y0);
+      if (dy > 0) panel.style.transform = "translateY(" + dy + "px)";
+    }, { passive: true });
+    panel.addEventListener("touchend", function () {
+      if (y0 === null) return;
+      panel.style.transform = "";
+      if (dy > 110) closePanel();
+      y0 = null;
+    });
+  })();
+
   // ================= BOOT =================
   window.loadKeramoData().then(function (data) {
     state.categories = data.categories;
@@ -519,6 +576,7 @@
     applySettings();
     fillTypeSelect();
     renderMosaic();
+    setupHeroSlides();
     renderFilters();
     renderGrid();
     updateCalc();

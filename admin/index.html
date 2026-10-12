@@ -102,6 +102,7 @@
         <label>ელ.ფოსტა (აქ მოდის მოთხოვნები)<input name="email" type="email"></label>
         <label>Facebook ბმული<input name="facebook" type="url"></label>
         <label>სამუშაო საათები<input name="hours"></label>
+        <label>მომსახურების არეალი<input name="area" placeholder="მთელი საქართველო"></label>
         <h3 class="span2 settings-sub">ფასები</h3>
         <label>1.2 მეტრამდე, ₾<input name="price_tier1" type="number" min="0"></label>
         <label>1.2 – 1.6 მეტრი, ₾<input name="price_tier2" type="number" min="0"></label>
@@ -115,15 +116,25 @@
 <!-- ============ PRODUCT EDITOR (drawer) ============ -->
 <div class="drawer-overlay" id="editor-overlay" hidden></div>
 <aside class="drawer" id="editor" aria-hidden="true">
-  <form id="product-form">
+  <form id="product-form" novalidate>
     <div class="drawer-head">
       <h2 id="editor-title">ახალი მოდელი</h2>
       <button type="button" class="icon-btn" id="editor-close" aria-label="დახურვა">&times;</button>
     </div>
     <div class="drawer-body">
 
-      <div class="field-block">
-        <div class="fb-head"><h3>ფოტოები</h3><span class="muted">პირველი ფოტო = მთავარი (ყდა). გადაათრიეთ ან ისრებით შეცვალეთ რიგი.</span></div>
+      <div class="req-box" id="req-box">
+        <div class="req-head"><strong>საიტზე ბარათის სწორად გამოსაჩენად შეავსეთ:</strong><span id="req-count"></span></div>
+        <ul class="req-list" id="req-list"></ul>
+      </div>
+
+      <div class="preview-wrap">
+        <p class="muted preview-label">ასე გამოჩნდება საიტზე:</p>
+        <div class="card-preview" id="card-preview"></div>
+      </div>
+
+      <div class="field-block" data-field="photos">
+        <div class="fb-head"><h3>ფოტოები <i class="req">*</i></h3><span class="muted">პირველი ფოტო = მთავარი (ყდა). გადაათრიეთ ან ისრებით შეცვალეთ რიგი.</span></div>
         <div class="photos" id="photos"></div>
         <label class="dropzone" id="dropzone">
           <input type="file" id="photo-input" accept="image/jpeg,image/png,image/webp" multiple hidden>
@@ -133,13 +144,13 @@
       </div>
 
       <div class="form-grid">
-        <label class="span2">სათაური / მოდელის სახელი *<input name="name" required placeholder="მაგ. Nebbia"></label>
-        <label>კატეგორია<select name="category" id="pf-category"></select></label>
-        <label>მასალა<input name="material" placeholder="მაგ. კერამოგრანიტი" list="dl-material"></label>
-        <label>ფერი<input name="color" placeholder="მაგ. ნაცრისფერი"></label>
-        <label>სიგრძე, სმ * (ფასი ამით ითვლება)<input name="length_cm" type="number" min="1" max="1000" placeholder="მაგ. 100"></label>
-        <label>სიღრმე, სმ<input name="depth_cm" type="number" min="1" max="500" placeholder="მაგ. 45"></label>
-        <label>სიმაღლე, სმ (პოსტამენტურისთვის)<input name="height_cm" type="number" min="1" max="500" placeholder="მაგ. 85"></label>
+        <label class="span2" data-field="name">სათაური / მოდელის სახელი <i class="req">*</i><input name="name" placeholder="მაგ. Nebbia" maxlength="40"></label>
+        <label data-field="category">კატეგორია <i class="req">*</i><select name="category" id="pf-category"></select></label>
+        <label data-field="material">მასალა <i class="req">*</i><input name="material" placeholder="მაგ. კერამოგრანიტი" list="dl-material"></label>
+        <label data-field="color">ფერი <i class="req">*</i><input name="color" placeholder="მაგ. ნაცრისფერი"></label>
+        <label data-field="length_cm">სიგრძე, სმ <i class="req">*</i> (ფასი ამით ითვლება)<input name="length_cm" type="number" min="1" max="1000" placeholder="მაგ. 100"></label>
+        <label data-field="depth_cm">სიღრმე, სმ <i class="req">*</i><input name="depth_cm" type="number" min="1" max="500" placeholder="მაგ. 45"></label>
+        <label data-field="height_cm">სიმაღლე, სმ <i class="req req-ped">* პოსტამენტურზე</i><input name="height_cm" type="number" min="1" max="500" placeholder="მაგ. 85"></label>
         <label>ფასი, ₾ (ცარიელი = ავტომატური)<input name="price" type="number" min="0" placeholder="ავტომატური"></label>
         <p class="span2 price-preview" id="price-preview"></p>
         <label class="span2">ზომის შენიშვნა (არასავალდებულო)<input name="size" placeholder="მაგ. თაროთი, სარეცხი მანქანის სიგანეზე"></label>

@@ -43,10 +43,10 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 body {
   margin: 0; font-family: var(--font-body); background: var(--paper); color: var(--ink);
-  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  -webkit-font-smoothing: antialiased; overflow-x: clip;
 }
 a { color: inherit; }
 img { max-width: 100%; }
@@ -515,7 +515,6 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
   .process-list { grid-template-columns: 1fr; }
   .section-head { flex-direction: column; align-items: flex-start; gap: 12px; }
   section { padding: 76px 0; }
-  .fab-call { display: grid; }
   .scroll-cue { display: none; }
 }
 @media (max-width: 560px) {
@@ -540,4 +539,106 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
+}
+
+
+/* =====================================================================
+   PHONE — its own motion language: slideshow hero, swipe chips,
+   2-column cards that slide in from the sides, bottom sheet, action bar
+   ===================================================================== */
+.mbar, .hero-dots, .sheet-handle, .fab-call { display: none; }
+
+@media (max-width: 980px) {
+  body { padding-bottom: 68px; }
+
+  /* hero slideshow */
+  .hero-mosaic { display: block; height: 62vh; max-height: 460px; min-height: 300px; margin: 0 -32px; }
+  .hero-mosaic .m { position: absolute; inset: 0; clip-path: inset(0 0 0 100%); animation: none !important; z-index: 1; transition: clip-path 1.1s var(--ease-out); translate: none !important; }
+  .hero-mosaic .m.active { clip-path: inset(0 0 0 0); z-index: 2; }
+  .hero-mosaic .m.leaving { clip-path: inset(0 0 0 0); z-index: 1; }
+  body.loaded .hero-mosaic .m:first-child:not(.leaving) { clip-path: inset(0 0 0 0); }
+  .hero-mosaic .m img { animation: none !important; transform: scale(1.12); transition: transform 4.5s linear; }
+  .hero-mosaic .m.active img { transform: scale(1); }
+  .hero-mosaic::after { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; background: linear-gradient(to bottom, transparent 55%, var(--charcoal)); }
+  .hero-dots { display: flex; gap: 6px; position: absolute; left: 32px; bottom: 26px; z-index: 4; }
+  .hero-dots i { width: 22px; height: 3px; background: rgba(250,247,242,.35); transition: width .4s, background .4s; }
+  .hero-dots i.on { width: 40px; background: var(--orange); }
+  .price-badge { z-index: 4; right: 24px; bottom: 18px; translate: none !important; }
+  .hero .wrap { padding-top: 0; gap: 26px; }
+  .hero-title .line > span { transform: translateY(0) translateX(-30px); opacity: 0; }
+  body.loaded .hero-title .line > span { animation: slideInX .9s var(--ease-out) forwards; }
+  @keyframes slideInX { to { transform: none; opacity: 1; } }
+
+  /* filters: one swipeable row */
+  .filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -32px 22px; padding: 0 32px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter-btn { flex: 0 0 auto; scroll-snap-align: start; border-radius: 22px; }
+  .filter-ink { border-radius: 22px; }
+
+  /* cards slide in from their side */
+  .tile { transform: translateX(-40px) scale(.96); }
+  .tile:nth-child(2n) { transform: translateX(40px) scale(.96); }
+  .tile.in { transform: none; }
+  .tile:active { transform: scale(.97) !important; transition: transform .15s !important; }
+  .tile-view { transform: none; width: 34px; height: 34px; }
+
+  /* panel becomes a bottom sheet */
+  .panel { top: auto; left: 0; right: 0; width: 100%; max-height: 92vh; border-radius: 18px 18px 0 0; transform: translateY(100%); transition: transform .5s var(--ease-out); }
+  .panel.open { transform: none; }
+  .sheet-handle { display: block; position: sticky; top: 0; z-index: 4; height: 22px; margin-bottom: -22px; }
+  .sheet-handle::before { content: ""; position: absolute; left: 50%; top: 8px; width: 44px; height: 5px; border-radius: 3px; background: rgba(250,247,242,.85); transform: translateX(-50%); box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .panel-close { left: auto; right: 12px; top: 14px; border-radius: 50%; }
+  .gallery-main { aspect-ratio: 1 / 1; border-radius: 18px 18px 0 0; }
+  .g-zoom { right: 60px; top: 14px; }
+  .g-nav { width: 38px; height: 38px; border-radius: 50%; font-size: 22px; }
+
+  /* price cards pop up */
+  .price-card.reveal { transform: translateY(40px) scale(.94); }
+  .price-card.reveal.in { transform: none; }
+  .price-card:hover { transform: none; }
+
+  /* bottom action bar */
+  .mbar {
+    display: grid; grid-template-columns: 1fr 1fr 1.4fr; position: fixed; left: 10px; right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 45; background: rgba(28,24,21,.94);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35); transition: transform .4s var(--ease-out);
+  }
+  .mbar.hide { transform: translateY(calc(100% + 20px)); }
+  .nav-open .mbar, .panel-open .mbar { transform: translateY(calc(100% + 20px)); }
+  .mbar a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 9px 4px; color: var(--cream); text-decoration: none; font-family: var(--font-accent); font-size: 13px; }
+  .mbar a + a { border-left: 1px solid var(--line-dark); }
+  .mbar svg { width: 20px; height: 20px; fill: var(--orange); }
+  .mbar .mbar-main { background: var(--orange); color: var(--charcoal); font-size: 12.5px; }
+  .mbar .mbar-main b { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 17px; }
+  .mbar a:active { opacity: .7; }
+}
+
+@media (max-width: 560px) {
+  .hero-mosaic { margin: 0 -20px; }
+  .hero-dots { left: 20px; }
+  .filters { margin: 0 -20px 18px; padding: 0 20px; }
+  .tile-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile-media { aspect-ratio: 3 / 4; }
+  .tile-badge { font-size: 10.5px; padding: 4px 6px; left: 8px; top: 8px; }
+  .tile-count { right: 8px; top: 8px; padding: 4px 6px; font-size: 11px; }
+  .tile-price { left: 10px; bottom: 10px; font-size: 20px; }
+  .tile-price small { font-size: 11px; margin-bottom: 2px; }
+  .tile-price.custom { font-size: 13px; }
+  .tile-view { display: none; }
+  .tile-body { padding: 10px 10px 12px; }
+  .tile-collection { font-size: 12px; }
+  .tile-name { font-size: 16px; margin-bottom: 6px; }
+  .tile-meta span { font-size: 11px; padding: 3px 5px; }
+  .tile-meta span:not(.size) { display: none; }
+  .hero-price { display: grid; width: 100%; }
+  .hero-actions .btn { flex: 1 1 100%; }
+  .hero-stats { justify-content: space-between; }
+  .hero-stat { padding: 0 10px; }
+  .marquee { padding: 14px 0; }
+  .section-head h2, .washer-feature-copy h2 { font-size: 30px; }
+  .calc-total b { font-size: 60px; }
+  input[type="range"] { height: 8px; }
+  input[type="range"]::-webkit-slider-thumb { width: 32px; height: 32px; }
+  .quick-contact { display: none; }
 }
