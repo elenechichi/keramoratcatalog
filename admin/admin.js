@@ -41,7 +41,16 @@
     if (cm <= 160) return t2;
     return null;
   }
-  function priceOf(p) { return p.price || tierPrice(p.length_cm); }
+  function catPriceA(id) { var c = S.categories.filter(function (x) { return x.id === id; })[0]; return c && c.price ? c.price : null; }
+  function catA(id) { return S.categories.filter(function (x) { return x.id === id; })[0] || {}; }
+  function basinsA(id) { return Math.max(1, intOrNull(catA(id).basins) || 1); }
+  function extraBasin() { return intOrNull(S.settings.price_extra_basin) || 350; }
+  function autoPrice(catId, cm) {
+    var cp = catPriceA(catId); if (cp) return cp;
+    var b = tierPrice(cm); if (!b) return null;
+    return b + (basinsA(catId) - 1) * extraBasin();
+  }
+  function priceOf(p) { return p.price || autoPrice(p.category, p.length_cm); }
   function sizeOf(p) {
     var parts = [p.length_cm, p.depth_cm, p.height_cm].filter(Boolean);
     return parts.length ? parts.join("×") + " სმ" : "ზომა არ არის";
@@ -124,7 +133,8 @@
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
     t.addEventListener("click", function () {
       Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.setAttribute("aria-selected", String(x === t)); });
-      ["products", "categories", "settings"].forEach(function (n) { $("tab-" + n).hidden = n !== t.dataset.tab; });
+      ["leads", "products", "categories", "settings"].forEach(function (n) { $("tab-" + n).hidden = n !== t.dataset.tab; });
+      if (t.dataset.tab === "leads") loadLeads();
     });
   });
 
@@ -141,6 +151,7 @@
       S.settings = {};
       res[2].data.forEach(function (row) { S.settings[row.key] = row.value; });
       renderAll();
+      loadLeads();
     }).catch(fail);
   }
 
@@ -161,6 +172,69 @@
       return '<option value="' + esc(c.id) + '">' + esc(c.label) + "</option>";
     }).join("");
   }
+
+
+  // ---------- leads ----------
+  var STATUS = { new: "ახალი", contacted: "დაკავშირებული", done: "დასრულებული", spam: "სპამი" };
+  S.leads = [];
+  function fmtDate(iso) {
+    var d = new Date(iso);
+    return d.toLocaleDateString("ka-GE", { day: "numeric", month: "long" }) + ", " + d.toLocaleTimeString("ka-GE", { hour: "2-digit", minute: "2-digit" });
+  }
+  function telDigits(p) { var d = String(p || "").replace(/\D/g, ""); if (d.length === 9) d = "995" + d; return d; }
+  function loadLeads() {
+    return sb.from("leads").select("*").order("created_at", { ascending: false }).limit(500).then(function (r) {
+      if (r.error) { $("llist").innerHTML = '<p class="empty">მოთხოვნების ცხრილი ვერ ჩაიტვირთა: ' + esc(r.error.message) + "</p>"; return; }
+      S.leads = r.data; renderLeads();
+    });
+  }
+  function renderLeads() {
+    var f = $("l-filter").value;
+    var list = S.leads.filter(function (l) { return !f ? true : f === "open" ? (l.status === "new" || l.status === "contacted") : l.status === f; });
+    var nNew = S.leads.filter(function (l) { return l.status === "new"; }).length;
+    $("leads-badge").textContent = nNew; $("leads-badge").hidden = !nNew;
+    $("l-count").textContent = "(" + S.leads.length + ")";
+    if (!list.length) { $("llist").innerHTML = '<p class="empty">მოთხოვნები არ არის.</p>'; return; }
+    $("llist").innerHTML = list.map(function (l) {
+      var d = telDigits(l.phone);
+      var fields = [["ტიპი", l.type], ["ქალაქი", l.city], ["მოდელი", l.product], ["სიგრძე", l.size_cm ? l.size_cm + " სმ" : null], ["სავ. ფასი", l.est_price ? l.est_price + " ₾" : null]]
+        .filter(function (x) { return x[1]; }).map(function (x) { return "<span><b>" + x[0] + ":</b> " + esc(x[1]) + "</span>"; }).join("");
+      return '<div class="lcard ' + l.status + '" data-id="' + l.id + '"><div>' +
+        "<h3>" + esc(l.name) + ' · <a href="tel:+' + d + '">' + esc(l.phone) + "</a></h3>" +
+        '<span class="l-time">' + fmtDate(l.created_at) + "</span>" +
+        (fields ? '<div class="l-fields">' + fields + "</div>" : "") + "</div>" +
+        '<div class="l-actions">' +
+          '<select data-l="status">' + Object.keys(STATUS).map(function (k) { return '<option value="' + k + '"' + (k === l.status ? " selected" : "") + ">" + STATUS[k] + "</option>"; }).join("") + "</select>" +
+          '<a class="btn ghost sm" href="tel:+' + d + '">დარეკვა</a>' +
+          '<a class="btn ghost sm" target="_blank" rel="noopener" href="https://wa.me/' + d + '">WhatsApp</a>' +
+          '<button class="btn danger ghost sm" data-l="del">წაშლა</button>' +
+        "</div>" +
+        (l.message ? '<p class="l-msg">' + esc(l.message) + "</p>" : "") +
+      "</div>";
+    }).join("");
+  }
+  $("l-filter").addEventListener("change", renderLeads);
+  $("l-refresh").addEventListener("click", loadLeads);
+  $("llist").addEventListener("change", function (e) {
+    if (e.target.dataset.l !== "status") return;
+    var id = e.target.closest(".lcard").dataset.id, val = e.target.value;
+    sb.from("leads").update({ status: val }).eq("id", id).then(function (r) {
+      if (r.error) return fail(r.error);
+      S.leads.forEach(function (l) { if (l.id === id) l.status = val; });
+      renderLeads(); toast("სტატუსი: " + STATUS[val], "ok");
+    });
+  });
+  $("llist").addEventListener("click", function (e) {
+    var b = e.target.closest('[data-l="del"]'); if (!b) return;
+    var id = b.closest(".lcard").dataset.id;
+    if (!confirm("წავშალო ეს მოთხოვნა?")) return;
+    sb.from("leads").delete().eq("id", id).then(function (r) {
+      if (r.error) return fail(r.error);
+      S.leads = S.leads.filter(function (l) { return l.id !== id; });
+      renderLeads(); toast("წაიშალა", "ok");
+    });
+  });
+  setInterval(function () { if (!$("view-app").hidden) loadLeads(); }, 60000);
 
   // ---------- products list ----------
   $("p-search").addEventListener("input", renderProducts);
@@ -290,16 +364,19 @@
   });
 
   function updatePricePreview() {
-    var cm = intOrNull(form.length_cm.value), manual = intOrNull(form.price.value), auto = tierPrice(cm);
-    var wall = intOrNull(S.settings.price_wall) || 150;
+    var cm = intOrNull(form.length_cm.value), manual = intOrNull(form.price.value), auto = autoPrice(form.category.value, cm);
+    var nb = basinsA(form.category.value);
+    var wall = intOrNull(S.settings.price_wall) || 150, cp = catPriceA(form.category.value);
     var html;
     if (manual) html = "საიტზე ფასი: <b>" + manual + " ₾</b> (ხელით მითითებული)";
-    else if (auto) html = "საიტზე ფასი: <b>" + auto + " ₾</b> — ავტომატურად, " + (cm <= 120 ? "1.2 მ-მდე" : "1.2–1.6 მ") + " · კედელზე მიყენება +" + wall + " ₾";
+    else if (cp) html = "საიტზე ფასი: <b>" + cp + " ₾</b> — კატეგორიის ფიქსირებული ფასი (" + esc(catLabel(form.category.value)) + "), ზომაზე არ არის დამოკიდებული";
+    else if (auto) html = "საიტზე ფასი: <b>" + auto + " ₾</b> — ავტომატურად, " + (cm <= 120 ? "კედლის გასწვრივ 1.2 მ-მდე" : "კედლის გასწვრივ 1.2–1.6 მ") + (nb > 1 ? " · " + nb + " ვანა (+" + (nb - 1) * extraBasin() + " ₾)" : "") + " · მიტანა და მიყენება +" + (wall + (nb - 1) * (intOrNull(S.settings.price_wall_extra_basin) || 50)) + " ₾";
     else if (cm) html = "1.6 მეტრზე მეტია — საიტზე ეწერება <b>„ფასი შეთანხმებით“</b>, ან მიუთითეთ ფასი ხელით.";
     else html = "მიუთითეთ სიგრძე — ფასი ავტომატურად გამოითვლება.";
     $("price-preview").innerHTML = html;
   }
   form.length_cm.addEventListener("input", updatePricePreview);
+  form.category.addEventListener("change", updatePricePreview);
   form.price.addEventListener("input", updatePricePreview);
 
   // photos
@@ -412,9 +489,9 @@
     { key: "category",  label: "კატეგორია" },
     { key: "material",  label: "მასალა" },
     { key: "color",     label: "ფერი" },
-    { key: "length_cm", label: "სიგრძე" },
+    { key: "length_cm", label: "სიგრძე (კედლის გასწვრივ)" },
     { key: "depth_cm",  label: "სიღრმე" },
-    { key: "height_cm", label: "სიმაღლე", when: function (v) { return v.category === "pedestal"; } }
+    { key: "height_cm", label: "სიმაღლე", when: function (v) { return /^pedestal/.test(v.category || "") || !!catPriceA(v.category); } }
   ];
 
   function formValues() {
@@ -433,7 +510,7 @@
   function fieldOk(key, v) {
     var x = v[key];
     if (key === "photos") return x > 0;
-    if (key === "length_cm") return x >= 20 && x <= 400;
+    if (key === "length_cm") return x >= Math.max(20, intOrNull(catA(v.category).min_cm) || 0) && x <= 400;
     if (key === "depth_cm") return x >= 15 && x <= 150;
     if (key === "height_cm") return x >= 20 && x <= 200;
     return !!x;
@@ -484,7 +561,7 @@
   form.addEventListener("change", function () { renderRequirements(false); });
 
   function renderCardPreview(v) {
-    var cm = v.length_cm, manual = intOrNull(form.price.value), price = manual || tierPrice(cm);
+    var cm = v.length_cm, manual = intOrNull(form.price.value), price = manual || autoPrice(v.category, cm);
     var cover = S.photos[0] ? (S.photos[0].preview || imgUrl(S.photos[0].url)) : null;
     var size = [v.length_cm, v.depth_cm, v.height_cm].filter(Boolean);
     $("card-preview").innerHTML =
@@ -577,6 +654,9 @@
       var n = S.products.filter(function (p) { return p.category === c.id; }).length;
       return '<div class="crow" data-id="' + esc(c.id) + '">' +
         '<input class="clabel" value="' + esc(c.label) + '" aria-label="კატეგორიის სახელი">' +
+        '<label class="cprice" title="ფიქსირებული ფასი. ცარიელი = ფასი სიგრძით">ფასი ₾<input class="cprice-in" data-f="price" type="number" min="0" placeholder="სიგრძით" value="' + (c.price || "") + '"></label>' +
+        '<label class="cprice" title="ვანების რაოდენობა — ყოველი დამატებითი ვანა ფასს ემატება">ვანა<input class="cprice-in" data-f="basins" type="number" min="1" max="6" value="' + (c.basins || 1) + '"></label>' +
+        '<label class="cprice" title="მინიმალური სიგრძე კედლის გასწვრივ">მინ. სმ<input class="cprice-in" data-f="min_cm" type="number" min="0" placeholder="—" value="' + (c.min_cm || "") + '"></label>' +
         '<span class="muted">' + n + " პროდუქტი</span>" +
         '<button class="icon-btn" data-c="up"' + (k === 0 ? " disabled" : "") + ">↑</button>" +
         '<button class="icon-btn" data-c="down"' + (k === S.categories.length - 1 ? " disabled" : "") + ">↓</button>" +
@@ -586,6 +666,17 @@
   }
 
   $("clist").addEventListener("change", function (e) {
+    if (e.target.classList.contains("cprice-in")) {
+      var cid = e.target.closest(".crow").dataset.id, pv = intOrNull(e.target.value), fld = e.target.dataset.f;
+      if (fld === "basins") pv = Math.max(1, pv || 1);
+      var upd = {}; upd[fld] = pv;
+      sb.from("categories").update(upd).eq("id", cid).then(function (r) {
+        if (r.error) return fail(r.error);
+        S.categories.filter(function (c) { return c.id === cid; })[0][fld] = pv;
+        renderProducts(); toast("შენახულია", "ok");
+      });
+      return;
+    }
     if (!e.target.classList.contains("clabel")) return;
     var id = e.target.closest(".crow").dataset.id;
     var label = e.target.value.trim(); if (!label) return;
@@ -633,12 +724,12 @@
   // ---------- settings ----------
   function renderSettings() {
     var f = $("settings-form");
-    ["phone", "whatsapp", "email", "facebook", "hours", "area", "price_tier1", "price_tier2", "price_wall"].forEach(function (k) { f[k].value = S.settings[k] || ""; });
+    ["phone", "whatsapp", "email", "facebook", "hours", "area", "price_tier1", "price_tier2", "price_wall", "price_extra_basin", "price_wall_extra_basin"].forEach(function (k) { f[k].value = S.settings[k] || ""; });
   }
   $("settings-form").addEventListener("submit", function (e) {
     e.preventDefault();
     var f = e.target;
-    var rows = ["phone", "whatsapp", "email", "facebook", "hours", "area", "price_tier1", "price_tier2", "price_wall"].map(function (k) { return { key: k, value: f[k].value.trim() }; });
+    var rows = ["phone", "whatsapp", "email", "facebook", "hours", "area", "price_tier1", "price_tier2", "price_wall", "price_extra_basin", "price_wall_extra_basin"].map(function (k) { return { key: k, value: f[k].value.trim() }; });
     sb.from("settings").upsert(rows).then(function (r) {
       if (r.error) return fail(r.error);
       rows.forEach(function (row) { S.settings[row.key] = row.value; });

@@ -4,17 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>KERAMO ART — კერამო არტის აბაზანის ნიჟარები</title>
-<meta name="description" content="კერამო არტის აბაზანის ნიჟარები კერამოგრანიტისგან: ჩაშენებული, ორმაგი, პოსტამენტური და სარეცხ მანქანაზე მორგებული. 1.2 მეტრამდე — 850 ₾, 1.2–1.6 მეტრი — 1250 ₾.">
+<meta name="description" content="კერამო არტის აბაზანის ნიჟარები კერამოგრანიტისგან: ერთვანიანი, ორვანიანი, პოსტამენტური და სარეცხ მანქანაზე მორგებული. კედლის გასწვრივ 1.2 მეტრამდე — 850 ₾, 1.2–1.6 მეტრი — 1250 ₾, ორვანიანი +350 ₾, პოსტამენტური — 1400/1550 ₾.">
 <meta name="theme-color" content="#211d1a">
 <meta property="og:title" content="KERAMO ART — აბაზანის ნიჟარები კერამოგრანიტისგან">
-<meta property="og:description" content="დიზაინი, რომელიც სივრცეს ხასიათს სძენს. 1.2 მეტრამდე ნებისმიერი ზომის ნიჟარა — 850 ₾.">
+<meta property="og:description" content="დიზაინი, რომელიც სივრცეს ხასიათს სძენს. კედლის გასწვრივ 1.2 მეტრამდე ნიჟარა — 850 ₾.">
 <meta property="og:image" content="https://keramoart.com.ge/assets/sinks/notte-01.jpg">
 <meta property="og:url" content="https://keramoart.com.ge/">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
 <link rel="preload" href="assets/fonts/bpg-nino-mtavruli-bold.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="assets/fonts/ar-archy-semibold.woff" as="font" type="font/woff" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=4">
+<link rel="stylesheet" href="css/style.css?v=7">
 </head>
 <body class="is-loading">
 
@@ -54,19 +54,24 @@
   <!-- HERO -->
   <section class="hero" id="hero">
     <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-blob b2" aria-hidden="true"></div>
+    <div class="hero-spot" id="hero-spot" aria-hidden="true"></div>
+    <svg class="hero-grain" aria-hidden="true"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#grain)"/></svg>
     <div class="wrap">
       <div class="hero-copy">
+        <p class="live-pill anim-up" style="--d:0s"><span class="live-dot"></span>ონლაინ 24/7 · ვემსახურებით მთელ საქართველოს</p>
         <p class="hero-eyebrow anim-up" style="--d:.05s">დიზაინი, რომელიც სივრცეს ხასიათს სძენს</p>
         <h1 class="hero-title">
           <span class="line"><span>კერამო არტის</span></span>
           <span class="line"><span>აბაზანის</span></span>
           <span class="line"><span class="accent-word">ნიჟარები</span></span>
         </h1>
-        <p class="lede anim-up" style="--d:.55s">კერამოგრანიტის ნიჟარები, რომლებიც მზადდება ზუსტად თქვენს ზომაზე — ჩაშენებული, ორმაგი, პოსტამენტური და სარეცხ მანქანაზე მორგებული.</p>
+        <p class="rotator anim-up" style="--d:.45s" aria-live="off"><span class="rot-label">ტიპი:</span><span class="rot-words" id="rot-words"><b class="on">ჩაშენებული</b><b>ორვანიანი</b><b>პოსტამენტური</b><b>სარეცხ მანქანაზე მორგებული</b><b>ინდივიდუალური დიზაინი</b></span></p>
+        <p class="lede anim-up" style="--d:.55s">კერამოგრანიტის ნიჟარები, რომლებიც მზადდება ზუსტად თქვენს ზომაზე — ერთვანიანი, ორვანიანი, პოსტამენტური და სარეცხ მანქანაზე მორგებული.</p>
         <div class="hero-price anim-up" style="--d:.65s">
           <span class="hp-label">ფასი</span>
           <span class="hp-value"><b>850</b> ₾-დან</span>
-          <span class="hp-note">1.2 მეტრამდე ნებისმიერი ზომა · მთელ საქართველოში</span>
+          <span class="hp-note">კედლის გასწვრივ სიგრძეში 1.2 მეტრამდე · მთელ საქართველოში</span>
         </div>
         <div class="hero-actions anim-up" style="--d:.75s">
           <a href="#catalog" class="btn btn-primary magnetic"><span>კატალოგის ნახვა</span></a>
@@ -82,6 +87,8 @@
         <div class="m m1" data-depth="18"><img src="assets/sinks/notte-01.jpg" alt=""></div>
         <div class="m m2" data-depth="30"><img src="assets/sinks/calacatta-01.jpg" alt=""></div>
         <div class="m m3" data-depth="24"><img src="assets/sinks/pietraserena-01.jpg" alt=""></div>
+        <div class="chip chip-1" data-depth="46"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>აზომვა: თბილისი · რუსთავი</div>
+        <div class="chip chip-2" data-depth="36"><svg viewBox="0 0 24 24"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>მთელი საქართველო</div>
         <div class="price-badge" data-depth="40"><span>1.2 მ-მდე</span><b>850 ₾</b></div>
         <div class="hero-dots" id="hero-dots"></div>
         <svg class="mosaic-mark" viewBox="0 0 120 100"><path d="M60 6 L112 50 L100 50 L60 16 L20 50 L8 50 Z"/></svg>
@@ -150,51 +157,109 @@
       <div class="section-head">
         <div>
           <p class="section-tag reveal">გამჭვირვალე ფასები</p>
-          <h2 class="split-title">ფასი ზომის მიხედვით</h2>
+          <h2 class="split-title">ფასები ტიპისა და ზომის მიხედვით</h2>
         </div>
-        <p class="reveal">ფასი დამოკიდებულია მხოლოდ ნიჟარის სიგრძეზე. საბოლოო ზომას ვადგენთ ადგილზე აზომვით.</p>
+        <p class="reveal">კედლის ნიჟარის ფასს განსაზღვრავს მისი სიგრძე კედლის გასწვრივ და ვანების რაოდენობა. პოსტამენტურს ფიქსირებული ფასი აქვს.</p>
       </div>
 
+      <!-- single basin -->
+      <div class="ped-head reveal" style="margin-top:0">
+        <h3>ერთვანიანი ნიჟარები</h3>
+        <p>კედელზე დამაგრებული, ჩაშენებული და სარეცხ მანქანაზე მორგებული.</p>
+      </div>
       <div class="price-cards">
-        <article class="price-card reveal" style="--d:.0s">
-          <p class="pc-range"><span data-price-label="1">1.2 მეტრამდე</span></p>
+        <article class="price-card reveal" style="--d:0s">
+          <p class="pc-range"><span>კედლის გასწვრივ სიგრძეში 1.2 მეტრამდე</span></p>
           <p class="pc-price"><b data-price="tier1">850</b><span>₾</span></p>
-          <p class="pc-desc">ნებისმიერი ზომის ნიჟარა 120 სმ-მდე — მათ შორის პოსტამენტური.</p>
+          <p class="pc-desc">ნებისმიერი ზომის ერთვანიანი ნიჟარა, თუ მისი სიგრძე კედლის გასწვრივ 120 სმ-ს არ აღემატება.</p>
           <svg class="pc-sink" viewBox="0 0 200 40"><rect x="40" y="10" width="120" height="20" rx="3"/><rect x="85" y="15" width="30" height="10" rx="2" class="basin"/></svg>
         </article>
         <article class="price-card featured reveal" style="--d:.12s">
           <span class="pc-flag">ყველაზე მოთხოვნადი</span>
-          <p class="pc-range"><span>1.2 – 1.6 მეტრი</span></p>
+          <p class="pc-range"><span>კედლის გასწვრივ სიგრძეში 1.2-დან 1.6 მეტრამდე</span></p>
           <p class="pc-price"><b data-price="tier2">1250</b><span>₾</span></p>
-          <p class="pc-desc">ნებისმიერი ზომის ნიჟარა 120-დან 160 სმ-მდე — ორმაგი და სარეცხ მანქანაზე მორგებული.</p>
+          <p class="pc-desc">ნებისმიერი ზომის ერთვანიანი ნიჟარა, რომლის სიგრძე კედლის გასწვრივ 120-დან 160 სმ-მდეა.</p>
+          <svg class="pc-sink" viewBox="0 0 200 40"><rect x="10" y="10" width="180" height="20" rx="3"/><rect x="85" y="15" width="30" height="10" rx="2" class="basin"/></svg>
+        </article>
+        <article class="price-card addon reveal" style="--d:.24s">
+          <p class="pc-range"><span>სარეცხ მანქანაზე მორგებული</span></p>
+          <p class="pc-price"><small>min</small><b>90</b><span>სმ</span></p>
+          <p class="pc-desc">სიგრძე კედლის გასწვრივ მინიმუმ 90 სმ. ფასი ითვლება იმავე პრინციპით — 850 ან 1250 ₾.</p>
+          <svg class="pc-sink" viewBox="0 0 200 40"><rect x="20" y="6" width="160" height="12" rx="2"/><rect x="40" y="8" width="26" height="8" rx="2" class="basin"/><rect x="110" y="18" width="50" height="22" rx="3" class="wall"/></svg>
+        </article>
+      </div>
+
+      <!-- double basin -->
+      <div class="ped-head reveal">
+        <h3>ორვანიანი ნიჟარები</h3>
+        <p>სიგრძე კედლის გასწვრივ იწყება 1.2 მეტრიდან. ყოველი დამატებითი ვანა — <b>+<span data-price="extra">350</span> ₾</b>.</p>
+      </div>
+      <div class="price-cards double-cards">
+        <article class="price-card reveal" style="--d:0s">
+          <p class="pc-range"><span>კედლის გასწვრივ სიგრძეში 1.2 მეტრი</span></p>
+          <p class="pc-price"><b data-price="double1">1200</b><span>₾</span></p>
+          <p class="pc-desc">850 ₾ + 350 ₾ მეორე ვანაზე.</p>
+          <svg class="pc-sink" viewBox="0 0 200 40"><rect x="40" y="10" width="120" height="20" rx="3"/><rect x="58" y="15" width="28" height="10" rx="2" class="basin"/><rect x="114" y="15" width="28" height="10" rx="2" class="basin"/></svg>
+        </article>
+        <article class="price-card featured reveal" style="--d:.12s">
+          <p class="pc-range"><span>კედლის გასწვრივ სიგრძეში 1.2-დან 1.6 მეტრამდე</span></p>
+          <p class="pc-price"><b data-price="double2">1600</b><span>₾</span></p>
+          <p class="pc-desc">1250 ₾ + 350 ₾ მეორე ვანაზე.</p>
           <svg class="pc-sink" viewBox="0 0 200 40"><rect x="10" y="10" width="180" height="20" rx="3"/><rect x="45" y="15" width="30" height="10" rx="2" class="basin"/><rect x="125" y="15" width="30" height="10" rx="2" class="basin"/></svg>
         </article>
         <article class="price-card addon reveal" style="--d:.24s">
-          <p class="pc-range"><span>დამატებითი მომსახურება</span></p>
+          <p class="pc-range"><span>მიტანა და კედელზე კაპიტალურად მიყენება</span></p>
           <p class="pc-price"><small>+</small><b data-price="wall">150</b><span>₾</span></p>
-          <p class="pc-desc">ნიჟარის კედელზე მიყენება (მონტაჟი) ჩვენი ბრიგადის მიერ.</p>
+          <p class="pc-desc">ერთვანიან ნიჟარაზე. ორვანიანზე — <b>+<span data-price="wall2">200</span> ₾</b>.</p>
           <svg class="pc-sink" viewBox="0 0 200 40"><rect x="20" y="4" width="6" height="32" class="wall"/><rect x="26" y="12" width="110" height="16" rx="2"/><path d="M150 20 h30 M170 12 l10 8 -10 8" class="arrow"/></svg>
         </article>
+      </div>
+
+      <!-- pedestal -->
+      <div class="ped-head reveal">
+        <h3>პოსტამენტური ნიჟარები</h3>
+        <p>იატაკზე მდგომი ნიჟარა — ფასი ფიქსირებულია და ზომაზე არ არის დამოკიდებული.</p>
+      </div>
+      <div class="price-cards ped-cards">
+        <article class="price-card reveal" style="--d:0s">
+          <p class="pc-range"><span>მართკუთხა პოსტამენტი</span></p>
+          <p class="pc-price"><b data-cat-price="pedestal-rect">1400</b><span>₾</span></p>
+          <p class="pc-desc">სწორი, მართკუთხა ფეხი — კლასიკური და მასიური ფორმა.</p>
+          <svg class="pc-ped" viewBox="0 0 120 120"><rect x="30" y="14" width="60" height="16" rx="2" class="top"/><rect x="40" y="30" width="40" height="80" class="leg"/></svg>
+        </article>
+        <article class="price-card featured reveal" style="--d:.12s">
+          <span class="pc-flag">დიზაინერული</span>
+          <p class="pc-range"><span>დაცერავებული ფეხით</span></p>
+          <p class="pc-price"><b data-cat-price="pedestal-taper">1550</b><span>₾</span></p>
+          <p class="pc-desc">ქვემოთ დავიწროებული, დახრილი ფეხი — მსუბუქი, თანამედროვე სილუეტი.</p>
+          <svg class="pc-ped" viewBox="0 0 120 120"><rect x="26" y="14" width="68" height="16" rx="2" class="top"/><path d="M30 30 H90 L72 110 H48 Z" class="leg"/></svg>
+        </article>
+        <a href="#catalog" class="price-card ped-link reveal" style="--d:.24s" id="ped-jump">
+          <p class="pc-range"><span>ნახეთ ნამუშევრები</span></p>
+          <p class="pc-desc">პოსტამენტური ნიჟარების განხორციელებული პროექტები კატალოგში.</p>
+          <span class="ped-arrow">→</span>
+        </a>
       </div>
 
       <!-- calculator -->
       <div class="calc reveal" id="calc">
         <div class="calc-left">
           <h3>ფასის კალკულატორი</h3>
-          <label for="calc-len" class="calc-label">ნიჟარის სიგრძე: <output id="calc-len-out">100</output> სმ</label>
+          <div class="calc-modes" id="calc-modes" role="group" aria-label="ნიჟარის ტიპი"></div>
+          <label for="calc-len" class="calc-label">სიგრძე კედლის გასწვრივ: <output id="calc-len-out">100</output> სმ</label>
           <input type="range" id="calc-len" min="40" max="200" step="5" value="100">
-          <div class="calc-scale"><span>40</span><span>120</span><span>160</span><span>200 სმ</span></div>
-          <label class="calc-check"><input type="checkbox" id="calc-wall"><span class="box"></span> კედელზე მიყენება <b>+<span data-price="wall">150</span> ₾</b></label>
+          <div class="calc-scale"><span><span id="calc-min">40</span></span><span>120</span><span>160</span><span>200 სმ</span></div>
+          <label class="calc-check"><input type="checkbox" id="calc-wall"><span class="box"></span> მიტანა და კედელზე მიყენება <b>+<span id="calc-wall-price">150</span> ₾</b></label>
           <div class="calc-visual" aria-hidden="true">
             <div class="cv-wall"></div>
-            <div class="cv-sink" id="cv-sink"><span class="cv-basin"></span></div>
+            <div class="cv-sink" id="cv-sink"><span class="cv-basin"></span><span class="cv-basin b2"></span></div>
             <div class="cv-ruler" id="cv-ruler"><span id="cv-ruler-label">100 სმ</span></div>
           </div>
         </div>
         <div class="calc-right">
           <p class="calc-total-label">სავარაუდო ფასი</p>
           <p class="calc-total"><b id="calc-total">850</b><span id="calc-currency"> ₾</span></p>
-          <p class="calc-note" id="calc-note">1.2 მეტრამდე ნებისმიერი ზომა</p>
+          <p class="calc-note" id="calc-note">კედლის გასწვრივ სიგრძეში 1.2 მეტრამდე</p>
           <a href="#contact" class="btn btn-primary magnetic" id="calc-cta"><span>ამ ზომაზე შეკვეთა</span></a>
         </div>
       </div>
@@ -220,12 +285,12 @@
         <div class="process-item reveal" style="--d:.12s">
           <div class="step">02</div>
           <h3>აზომვა ადგილზე</h3>
-          <p>ჩვენი ბრიგადა მოდის თქვენთან მთელი საქართველოს მასშტაბით და ატარებს ზუსტ აზომვას.</p>
+          <p>აზომვაზე მივდივართ თბილისში, რუსთავსა და თბილისის შემოგარენში — როცა შეკვეთა უკვე გადაწყვეტილი გაქვთ. სხვა ქალაქებიდან ზომები გამოგვიგზავნეთ.</p>
         </div>
         <div class="process-item reveal" style="--d:.24s">
           <div class="step">03</div>
           <h3>დამზადება და მონტაჟი</h3>
-          <p>ფასი განისაზღვრება სიგრძით. საჭიროების შემთხვევაში ნიჟარას კედელზეც მივაყენებთ.</p>
+          <p>ვამზადებთ თქვენს ზომაზე. მიტანა და კედელზე კაპიტალურად მიყენება — 150 ₾ (ორვანიანზე 200 ₾).</p>
         </div>
       </div>
     </div>
@@ -252,8 +317,8 @@
             <dd><a id="c-facebook" href="https://www.facebook.com/profile.php?id=61551452274576" target="_blank" rel="noopener">KERAMO ART — ნამუშევრები</a></dd>
             <dt>სამუშაო საათები</dt>
             <dd id="c-hours">ყოველდღე, 24 საათი — კვირის ყველა დღე</dd>
-            <dt>მომსახურების არეალი</dt>
-            <dd id="c-area">მთელი საქართველო — აზომვა და მონტაჟი ნებისმიერ ქალაქში</dd>
+            <dt>აზომვა</dt>
+            <dd id="c-area">აზომვა ადგილზე: თბილისი, რუსთავი და თბილისის შემოგარენი (როცა შეკვეთა გადაწყვეტილია)</dd>
           </dl>
           <div class="quick-contact">
             <a class="qc" id="qc-call" href="tel:+995597323295">
@@ -271,6 +336,7 @@
           </div>
         </div>
         <form id="inquiry-form" class="reveal" novalidate>
+          <input type="text" name="_honey" class="form-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="form-row">
             <div class="form-field">
               <label for="f-name">სახელი, გვარი</label>
@@ -310,7 +376,8 @@
             <textarea id="f-message" name="message" placeholder="დამატებითი დეტალები თქვენი სივრცის შესახებ"></textarea>
           </div>
           <p class="form-error" id="form-error" hidden>გთხოვთ, მიუთითოთ სახელი და ტელეფონი.</p>
-          <button type="submit" class="btn btn-primary magnetic"><span>გაგზავნა</span></button>
+          <p class="form-fail" id="form-fail" hidden></p>
+          <button type="submit" class="btn btn-primary magnetic" id="form-submit"><span>გაგზავნა</span></button>
         </form>
       </div>
     </div>
@@ -374,9 +441,9 @@
   <span class="g-counter lb-counter" id="lb-counter"></span>
 </div>
 
-<script src="js/config.js?v=4"></script>
-<script src="js/products.js?v=4"></script>
-<script src="js/data.js?v=4"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/config.js?v=7"></script>
+<script src="js/products.js?v=7"></script>
+<script src="js/data.js?v=7"></script>
+<script src="js/app.js?v=7"></script>
 </body>
 </html>

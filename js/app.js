@@ -33,7 +33,9 @@
     return {
       t1: num(state.settings.price_tier1, 850),
       t2: num(state.settings.price_tier2, 1250),
-      wall: num(state.settings.price_wall, 150)
+      wall: num(state.settings.price_wall, 150),
+      extraBasin: num(state.settings.price_extra_basin, 350),
+      wallExtra: num(state.settings.price_wall_extra_basin, 50)
     };
   }
   function priceForCm(cm) {
@@ -43,7 +45,28 @@
     if (cm <= 160) return t.t2;
     return null;
   }
-  function priceOf(p) { return p.price ? p.price : priceForCm(p.length_cm); }
+  function catOf(id) { return state.categories.filter(function (x) { return x.id === id; })[0] || {}; }
+  function catPrice(id) { var c = catOf(id); return c.price ? num(c.price, null) : null; }
+  function isFixedCat(id) { return !!catPrice(id); }
+  function basinsOf(catId) { return Math.max(1, num(catOf(catId).basins, 1)); }
+  function minCmOf(catId) { return num(catOf(catId).min_cm, 0); }
+  // price for a category + length (single source of truth for tiles, panel, calculator, form)
+  function priceFor(catId, cm) {
+    var fixed = catPrice(catId);
+    if (fixed) return fixed;
+    var base = priceForCm(cm);
+    if (!base) return null;
+    return base + (basinsOf(catId) - 1) * tiers().extraBasin;
+  }
+  function mountFor(catId) {
+    if (isFixedCat(catId)) return null;
+    var t = tiers();
+    return t.wall + (basinsOf(catId) - 1) * t.wallExtra;
+  }
+  function priceOf(p) { return p.price ? p.price : priceFor(p.category, p.length_cm); }
+  function rangeText(cm) {
+    return cm <= 120 ? "კედლის გასწვრივ სიგრძეში 1.2 მეტრამდე" : "კედლის გასწვრივ სიგრძეში 1.2-დან 1.6 მეტრამდე";
+  }
   function sizeText(p) {
     if (!p.length_cm) return p.size || "ინდივიდუალური ზომა";
     var parts = [p.length_cm, p.depth_cm, p.height_cm].filter(Boolean);
@@ -306,13 +329,15 @@
     $("panel-note").textContent = p.note || "";
     $("panel-note").hidden = !p.note;
 
-    var price = priceOf(p), t = tiers(), pp = $("panel-price");
+    var price = priceOf(p), pp = $("panel-price"), mount = mountFor(p.category), nb = basinsOf(p.category);
     pp.classList.toggle("custom", !price);
     pp.innerHTML = price
       ? '<div class="pp-main">' + fmt(price) + "<span> ₾</span></div>" +
-        '<div class="pp-side">' + (p.length_cm ? (p.length_cm <= 120 ? "1.2 მეტრამდე ზომა" : "1.2 – 1.6 მეტრი") : "") +
-        "<br>კედელზე მიყენება <b>+" + t.wall + " ₾</b></div>"
-      : '<div class="pp-main">ფასი შეთანხმებით</div><div class="pp-side">1.6 მეტრზე მეტი ან<br>ინდივიდუალური დიზაინი</div>';
+        (isFixedCat(p.category) && !p.price
+          ? '<div class="pp-side">' + esc(categoryLabel(p.category)) + "<br>ფიქსირებული ფასი, ნებისმიერი ზომა</div>"
+          : '<div class="pp-side">' + (p.length_cm ? rangeText(p.length_cm) : "") + (nb > 1 ? " · " + nb + " ვანა" : "") +
+            "<br>მიტანა და კედელზე კაპიტალურად მიყენება <b>+" + mount + " ₾</b></div>")
+      : '<div class="pp-main">ფასი შეთანხმებით</div><div class="pp-side">კედლის გასწვრივ 1.6 მ-ზე მეტი ან<br>ინდივიდუალური დიზაინი</div>';
 
     $("panel-whatsapp").href = "https://wa.me/" + waNumber() + "?text=" +
       encodeURIComponent("გამარჯობა! მაინტერესებს მოდელი „" + p.name + "“ (keramoart.com.ge)");
@@ -381,36 +406,76 @@
   });
 
   // ================= CALCULATOR =================
-  var calcLen = $("calc-len"), calcWall = $("calc-wall"), lastTotal = null;
+  var calcLen = $("calc-len"), calcWall = $("calc-wall"), lastTotal = null, calcMode = null;
+  function calcCats() { return state.categories.filter(function (c) { return c.id !== "custom"; }); }
+  function renderCalcModes() {
+    var cats = calcCats();
+    if (!calcMode && cats[0]) calcMode = cats[0].id;
+    $("calc-modes").innerHTML = cats.map(function (c) {
+      return '<button type="button" data-mode="' + esc(c.id) + '" aria-pressed="' + (c.id === calcMode) + '">' + esc(c.label) + "</button>";
+    }).join("");
+  }
+  $("calc-modes").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-mode]"); if (!b) return;
+    calcMode = b.dataset.mode;
+    $$("#calc-modes button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    updateCalc();
+  });
+  function bumpTo(el, val) {
+    if (val === lastTotal) return;
+    animateNumber(el, lastTotal || val, val);
+    el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+    lastTotal = val;
+  }
   function updateCalc() {
-    var cm = num(calcLen.value, 100), t = tiers();
-    var base = priceForCm(cm);
-    var pct = (cm - calcLen.min) / (calcLen.max - calcLen.min) * 100;
+    var totalEl = $("calc-total"), wrap = totalEl.parentNode;
+    var fixed = catPrice(calcMode);
+    $("calc").classList.toggle("fixed", !!fixed);
+    if (fixed) {
+      wrap.classList.remove("custom");
+      $("calc-currency").textContent = " ₾";
+      $("calc-note").textContent = categoryLabel(calcMode) + " — ფიქსირებული ფასი, ნებისმიერი ზომა";
+      bumpTo(totalEl, fixed);
+      return;
+    }
+    // length limits per type (e.g. double basin from 120 cm, washer-adapted from 90 cm)
+    var min = Math.max(40, minCmOf(calcMode));
+    calcLen.min = min;
+    if (num(calcLen.value, 100) < min) calcLen.value = min;
+    $("calc-min").textContent = min;
+    $$(".calc-scale > span").forEach(function (sp, k) {
+      if (k === 1 || k === 2) {
+        var v = k === 1 ? 120 : 160;
+        sp.style.left = ((v - min) / (calcLen.max - min) * 100) + "%";
+        sp.style.visibility = v <= min ? "hidden" : "visible";
+      }
+    });
+    var cm = num(calcLen.value, 100);
+    var pct = (cm - min) / (calcLen.max - min) * 100;
     calcLen.style.setProperty("--p", pct + "%");
     $("calc-len-out").textContent = cm;
     var w = 22 + pct * 0.72;
     $("cv-sink").style.width = w + "%";
     $("cv-ruler").style.width = w + "%";
     $("cv-ruler-label").textContent = cm + " სმ";
+    $("cv-sink").classList.toggle("double", basinsOf(calcMode) > 1);
+    var mount = mountFor(calcMode);
+    $("calc-wall-price").textContent = mount;
     document.querySelector(".calc-visual").classList.toggle("wall", calcWall.checked);
 
-    var totalEl = $("calc-total"), wrap = totalEl.parentNode;
+    var base = priceFor(calcMode, cm);
     if (base) {
-      var total = base + (calcWall.checked ? t.wall : 0);
       wrap.classList.remove("custom");
       $("calc-currency").textContent = " ₾";
-      $("calc-note").textContent = (cm <= 120 ? "1.2 მეტრამდე ნებისმიერი ზომა" : "1.2 – 1.6 მეტრი") +
-        (calcWall.checked ? " + კედელზე მიყენება" : "");
-      if (total !== lastTotal) {
-        animateNumber(totalEl, lastTotal || total, total);
-        totalEl.classList.remove("bump"); void totalEl.offsetWidth; totalEl.classList.add("bump");
-        lastTotal = total;
-      }
+      var nb = basinsOf(calcMode);
+      $("calc-note").textContent = rangeText(cm) + (nb > 1 ? " · " + nb + " ვანა (+" + tiers().extraBasin * (nb - 1) + " ₾)" : "") +
+        (calcWall.checked ? " · მიტანა და მიყენება" : "");
+      bumpTo(totalEl, base + (calcWall.checked ? mount : 0));
     } else {
       wrap.classList.add("custom");
       totalEl.textContent = "შეთანხმებით";
       $("calc-currency").textContent = "";
-      $("calc-note").textContent = "1.6 მეტრზე მეტი — ფასს ინდივიდუალურად გეტყვით";
+      $("calc-note").textContent = "კედლის გასწვრივ 1.6 მეტრზე მეტი — ფასს ინდივიდუალურად გეტყვით";
       lastTotal = null;
     }
   }
@@ -429,9 +494,11 @@
   calcWall.addEventListener("change", updateCalc);
   $("calc-cta").addEventListener("click", function () {
     setTimeout(function () {
+      if (calcMode) $("f-type").value = categoryLabel(calcMode);
+      if (isFixedCat(calcMode)) return;
       $("f-size").value = calcLen.value;
       var msg = $("f-message");
-      if (calcWall.checked && msg.value.indexOf("კედელზე") === -1) msg.value = (msg.value ? msg.value + "\n" : "") + "მჭირდება კედელზე მიყენებაც.";
+      if (calcWall.checked && msg.value.indexOf("მიყენება") === -1) msg.value = (msg.value ? msg.value + "\n" : "") + "მჭირდება მიტანა და კედელზე მიყენებაც.";
     }, 400);
   });
 
@@ -449,12 +516,17 @@
     $("c-email").textContent = s.email; $("c-email").href = "mailto:" + s.email;
     $("c-facebook").href = s.facebook;
     $("c-hours").textContent = s.hours;
-    if (s.area) $("c-area").textContent = s.area + " — აზომვა და მონტაჟი ნებისმიერ ქალაქში";
+    if (s.area) $("c-area").textContent = s.area;
     $("qc-whatsapp").href = $("mbar-wa").href = "https://wa.me/" + waNumber();
     $("qc-viber").href = "viber://chat?number=%2B" + waNumber();
     $$('[data-price="tier1"]').forEach(function (e) { e.textContent = fmt(t.t1); });
     $$('[data-price="tier2"]').forEach(function (e) { e.textContent = fmt(t.t2); });
     $$('[data-price="wall"]').forEach(function (e) { e.textContent = fmt(t.wall); });
+    $$("[data-cat-price]").forEach(function (e) { var v = catPrice(e.dataset.catPrice); if (v) e.textContent = fmt(v); });
+    $$('[data-price="double1"]').forEach(function (e) { e.textContent = fmt(t.t1 + t.extraBasin); });
+    $$('[data-price="double2"]').forEach(function (e) { e.textContent = fmt(t.t2 + t.extraBasin); });
+    $$('[data-price="extra"]').forEach(function (e) { e.textContent = fmt(t.extraBasin); });
+    $$('[data-price="wall2"]').forEach(function (e) { e.textContent = fmt(t.wall + t.wallExtra); });
     $$(".mbar-main b").forEach(function (e) { e.textContent = fmt(t.t1) + " ₾-დან"; });
     $$(".hp-value b, .price-badge b").forEach(function (e) { e.textContent = e.closest(".price-badge") ? fmt(t.t1) + " ₾" : fmt(t.t1); });
   }
@@ -466,31 +538,88 @@
     });
   }
 
-  // ================= FORM =================
+  // ================= FORM (real sending) =================
+  // 1) e-mail via FormSubmit (first message asks the inbox to click "Activate" once)
+  // 2) copy into Supabase "leads" table so it shows in the admin panel
   var form = $("inquiry-form");
+  function sendEmail(data) {
+    var to = state.settings.email || "keramoartcollection@gmail.com";
+    return fetch("https://formsubmit.co/ajax/" + encodeURIComponent(to), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(Object.assign({
+        _subject: "🛁 ახალი მოთხოვნა საიტიდან — " + data["სახელი"] + (data["მოდელი"] ? " (" + data["მოდელი"] + ")" : ""),
+        _template: "table",
+        _captcha: "false"
+      }, data))
+    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) {
+      if (!r.ok || j.success === false || j.success === "false") throw new Error(j.message || ("HTTP " + r.status));
+      return j;
+    }); });
+  }
+  function saveLead(row) {
+    var cfg = window.KERAMO_CONFIG || {};
+    if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return Promise.reject(new Error("no-db"));
+    return fetch(cfg.SUPABASE_URL.replace(/\/$/, "") + "/rest/v1/leads", {
+      method: "POST",
+      headers: { apikey: cfg.SUPABASE_ANON_KEY, Authorization: "Bearer " + cfg.SUPABASE_ANON_KEY, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify(row)
+    }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); });
+  }
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    if (form._honey.value) return;
     var name = form.name.value.trim(), phone = form.phone.value.trim();
     $("form-error").hidden = !!(name && phone);
+    $("form-fail").hidden = true;
     if (!name || !phone) return;
     var product = form.product.value.trim(), size = form.size.value.trim();
-    var cm = num(size, 0), est = priceForCm(cm);
-    var body = [
-      "სახელი: " + name,
-      "ტელეფონი: " + phone,
-      form.type.value ? "ტიპი: " + form.type.value : null,
-      form.city.value ? "ქალაქი: " + form.city.value : null,
-      product ? "მოდელი: " + product : null,
-      size ? "სიგრძე: " + size + " სმ" + (est ? " (სავარაუდო ფასი " + est + " ₾)" : "") : null,
-      "",
-      form.message.value.trim()
-    ].filter(function (l) { return l !== null; }).join("\n");
-    window.location.href = "mailto:" + state.settings.email +
-      "?subject=" + encodeURIComponent("მოთხოვნა საიტიდან" + (product ? " — " + product : "")) +
-      "&body=" + encodeURIComponent(body);
+    var cm = num(size, 0);
+    var typeCat = state.categories.filter(function (c) { return c.label === form.type.value; })[0];
+    var est = typeCat ? priceFor(typeCat.id, cm) : priceForCm(cm);
+    var data = { "სახელი": name, "ტელეფონი": phone };
+    if (form.type.value) data["ტიპი"] = form.type.value;
+    if (form.city.value) data["ქალაქი"] = form.city.value;
+    if (product) data["მოდელი"] = product;
+    if (size) data["სიგრძე"] = size + " სმ" + (est ? " (სავარაუდო ფასი " + est + " ₾)" : "");
+    if (form.message.value.trim()) data["შეტყობინება"] = form.message.value.trim();
+    var row = { name: name, phone: phone, type: form.type.value || null, city: form.city.value || null,
+      product: product || null, size_cm: cm || null, est_price: est || null, message: form.message.value.trim() || null };
+
+    var btn = $("form-submit");
+    btn.classList.add("loading"); btn.disabled = true;
+
+    var results = [sendEmail(data), saveLead(row)].map(function (p) {
+      return p.then(function () { return true; }, function (err) { console.warn(err); return false; });
+    });
+    Promise.all(results).then(function (ok) {
+      btn.classList.remove("loading"); btn.disabled = false;
+      if (ok[0] || ok[1]) {
+        var box = document.createElement("div");
+        box.className = "form-success";
+        box.innerHTML = '<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="36"/><path d="M24 41l11 11 21-23"/></svg>' +
+          "<h3>მოთხოვნა გაიგზავნა!</h3><p>მადლობა, " + esc(name) + ". დაგიკავშირდებით უმოკლეს დროში" +
+          " ნომერზე " + esc(phone) + ".<br>ვმუშაობთ 24/7.</p>" +
+          '<button type="button" class="btn btn-ghost" id="form-again"><span>ახალი მოთხოვნა</span></button>';
+        form.hidden = true;
+        form.parentNode.insertBefore(box, form.nextSibling);
+        $("form-again").addEventListener("click", function () { box.remove(); form.reset(); form.hidden = false; });
+      } else {
+        var wa = "https://wa.me/" + waNumber() + "?text=" + encodeURIComponent(Object.keys(data).map(function (k) { return k + ": " + data[k]; }).join("\n"));
+        $("form-fail").innerHTML = "გაგზავნა ვერ მოხერხდა (ინტერნეტის პრობლემა). გთხოვთ, <a href=\"" + wa + "\" target=\"_blank\" rel=\"noopener\">გამოგვიგზავნეთ WhatsApp-ით</a> ან დაგვირეკეთ: <a href=\"tel:+" + waNumber() + "\">" + esc(state.settings.phone) + "</a>";
+        $("form-fail").hidden = false;
+      }
+    });
   });
 
   // ================= MISC =================
+  $("ped-jump").addEventListener("click", function (e) {
+    e.preventDefault();
+    setCategory("pedestal-taper");
+    $("catalog").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+  });
+
   $("washer-cta").addEventListener("click", function () {
     var w = state.products.filter(function (p) { return p.washer; })[0];
     setCategory(w ? w.category : "all");
@@ -566,6 +695,54 @@
     });
   })();
 
+
+  // ================= HERO EXTRAS =================
+  (function rotator() {
+    var words = $$("#rot-words b"); if (words.length < 2 || reduceMotion) return;
+    var i = 0;
+    setInterval(function () {
+      var cur = words[i]; i = (i + 1) % words.length;
+      cur.classList.remove("on"); cur.classList.add("out");
+      setTimeout(function () { cur.classList.remove("out"); }, 700);
+      words[i].classList.add("on");
+    }, 2400);
+  })();
+
+  if (finePointer && !reduceMotion) {
+    var heroEl = $("hero"), spot = $("hero-spot");
+    heroEl.addEventListener("pointermove", function (e) {
+      var r = heroEl.getBoundingClientRect();
+      spot.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      spot.style.setProperty("--my", (e.clientY - r.top) + "px");
+    });
+  }
+
+  // desktop: mosaic tiles cycle through other project photos
+  var swapTimer = null;
+  function setupMosaicSwap() {
+    clearInterval(swapTimer);
+    if (mq.matches || reduceMotion) return;
+    var pool = state.products.filter(function (p) { return imagesOf(p).length; }).map(coverOf);
+    var tiles = $$("#hero-mosaic .m");
+    if (pool.length <= tiles.length) return;
+    var next = tiles.length, t = 0;
+    swapTimer = setInterval(function () {
+      var tile = tiles[t % tiles.length]; t++;
+      var src = pool[next % pool.length]; next++;
+      var img = new Image();
+      img.className = "swap"; img.alt = ""; img.src = src;
+      img.onload = function () {
+        tile.appendChild(img);
+        requestAnimationFrame(function () { requestAnimationFrame(function () { img.classList.add("show"); }); });
+        setTimeout(function () {
+          var base = tile.querySelector("img:not(.swap)");
+          if (base) base.src = src;
+          img.remove();
+        }, 1300);
+      };
+    }, 3200);
+  }
+
   // ================= BOOT =================
   window.loadKeramoData().then(function (data) {
     state.categories = data.categories;
@@ -577,8 +754,10 @@
     fillTypeSelect();
     renderMosaic();
     setupHeroSlides();
+    setupMosaicSwap();
     renderFilters();
     renderGrid();
+    renderCalcModes();
     updateCalc();
     if (document.body.classList.contains("loaded")) startCounters();
     else setTimeout(startCounters, 1500);

@@ -7,7 +7,9 @@
     email: "keramoartcollection@gmail.com",
     facebook: "https://www.facebook.com/profile.php?id=61551452274576",
     hours: "ყოველდღე, 24 საათი — კვირის ყველა დღე",
-    area: "მთელი საქართველო",
+    area: "აზომვა ადგილზე: თბილისი, რუსთავი და თბილისის შემოგარენი (როცა შეკვეთა გადაწყვეტილია)",
+    price_extra_basin: "350",
+    price_wall_extra_basin: "50",
     price_tier1: "850",
     price_tier2: "1250",
     price_wall: "150"
@@ -44,7 +46,7 @@
     if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY) return Promise.resolve(fallback());
 
     return Promise.all([
-      rest(cfg, "categories?select=id,label,sort&order=sort.asc"),
+      rest(cfg, "categories?select=*&order=sort.asc"),
       rest(cfg, "products?select=*&published=eq.true&order=sort.asc,created_at.asc"),
       rest(cfg, "settings?select=key,value")
     ]).then(function (res) {

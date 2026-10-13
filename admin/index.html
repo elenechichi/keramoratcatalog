@@ -7,7 +7,7 @@
 <title>KERAMO ART — ადმინ პანელი</title>
 <link rel="icon" type="image/svg+xml" href="../assets/logo-mark.svg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="admin.css?v=3">
+<link rel="stylesheet" href="admin.css?v=7">
 </head>
 <body>
 
@@ -48,7 +48,8 @@
   <header class="topbar">
     <div class="tb-brand"><img src="../assets/logo-mark.svg" alt=""><span>KERAMO ART</span><em>ადმინი</em></div>
     <nav class="tabs" role="tablist">
-      <button class="tab" data-tab="products" aria-selected="true">პროდუქტები</button>
+      <button class="tab" data-tab="leads" aria-selected="true">მოთხოვნები <span class="badge" id="leads-badge" hidden></span></button>
+      <button class="tab" data-tab="products">პროდუქტები</button>
       <button class="tab" data-tab="categories">კატეგორიები</button>
       <button class="tab" data-tab="settings">კონტაქტები და ფასები</button>
     </nav>
@@ -60,8 +61,29 @@
 
   <main class="content">
 
+    <!-- LEADS -->
+    <section class="tab-panel" id="tab-leads">
+      <div class="toolbar">
+        <div>
+          <h2>მოთხოვნები <span class="muted" id="l-count"></span></h2>
+          <p class="muted">საიტის ფორმიდან მოსული მოთხოვნები. ასლი ელ.ფოსტაზეც მოდის.</p>
+        </div>
+        <div class="toolbar-right">
+          <select id="l-filter">
+            <option value="open">აქტიური (ახალი + დაკავშირებული)</option>
+            <option value="new">მხოლოდ ახალი</option>
+            <option value="contacted">დაკავშირებული</option>
+            <option value="done">დასრულებული</option>
+            <option value="">ყველა</option>
+          </select>
+          <button class="btn ghost" id="l-refresh">განახლება</button>
+        </div>
+      </div>
+      <div class="llist" id="llist"></div>
+    </section>
+
     <!-- PRODUCTS LIST -->
-    <section class="tab-panel" id="tab-products">
+    <section class="tab-panel" id="tab-products" hidden>
       <div class="toolbar">
         <div>
           <h2>პროდუქტები <span class="muted" id="p-count"></span></h2>
@@ -81,7 +103,7 @@
       <div class="toolbar">
         <div>
           <h2>კატეგორიები</h2>
-          <p class="muted">კატეგორიის წაშლისას მისი პროდუქტები რჩება, უბრალოდ კატეგორიის გარეშე.</p>
+          <p class="muted">„ფასი ₾“ — ფიქსირებული ფასი მთელ კატეგორიაზე (მაგ. პოსტამენტები: 1400 / 1550). ცარიელი = ფასი სიგრძით (850 / 1250). კატეგორიის წაშლისას მისი პროდუქტები რჩება კატეგორიის გარეშე.</p>
         </div>
       </div>
       <div class="card">
@@ -104,9 +126,11 @@
         <label>სამუშაო საათები<input name="hours"></label>
         <label>მომსახურების არეალი<input name="area" placeholder="მთელი საქართველო"></label>
         <h3 class="span2 settings-sub">ფასები</h3>
-        <label>1.2 მეტრამდე, ₾<input name="price_tier1" type="number" min="0"></label>
-        <label>1.2 – 1.6 მეტრი, ₾<input name="price_tier2" type="number" min="0"></label>
-        <label>კედელზე მიყენება, ₾<input name="price_wall" type="number" min="0"></label>
+        <label>კედლის გასწვრივ 1.2 მ-მდე, ₾<input name="price_tier1" type="number" min="0"></label>
+        <label>კედლის გასწვრივ 1.2–1.6 მ, ₾<input name="price_tier2" type="number" min="0"></label>
+        <label>ყოველი დამატებითი ვანა, ₾<input name="price_extra_basin" type="number" min="0"></label>
+        <label>მიტანა + კედელზე მიყენება (ერთვანიანი), ₾<input name="price_wall" type="number" min="0"></label>
+        <label>მიყენებას ემატება ყოველ დამატებით ვანაზე, ₾<input name="price_wall_extra_basin" type="number" min="0"></label>
         <div class="form-actions"><button class="btn primary" type="submit">შენახვა</button></div>
       </form>
     </section>
@@ -148,7 +172,7 @@
         <label data-field="category">კატეგორია <i class="req">*</i><select name="category" id="pf-category"></select></label>
         <label data-field="material">მასალა <i class="req">*</i><input name="material" placeholder="მაგ. კერამოგრანიტი" list="dl-material"></label>
         <label data-field="color">ფერი <i class="req">*</i><input name="color" placeholder="მაგ. ნაცრისფერი"></label>
-        <label data-field="length_cm">სიგრძე, სმ <i class="req">*</i> (ფასი ამით ითვლება)<input name="length_cm" type="number" min="1" max="1000" placeholder="მაგ. 100"></label>
+        <label data-field="length_cm">სიგრძე კედლის გასწვრივ, სმ <i class="req">*</i> (ორვანიანი ≥120, სარეცხ მანქ. ≥90)<input name="length_cm" type="number" min="1" max="1000" placeholder="მაგ. 100"></label>
         <label data-field="depth_cm">სიღრმე, სმ <i class="req">*</i><input name="depth_cm" type="number" min="1" max="500" placeholder="მაგ. 45"></label>
         <label data-field="height_cm">სიმაღლე, სმ <i class="req req-ped">* პოსტამენტურზე</i><input name="height_cm" type="number" min="1" max="500" placeholder="მაგ. 85"></label>
         <label>ფასი, ₾ (ცარიელი = ავტომატური)<input name="price" type="number" min="0" placeholder="ავტომატური"></label>
@@ -175,7 +199,7 @@
 <div class="toast" id="toast" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="../js/config.js?v=3"></script>
-<script src="admin.js?v=3"></script>
+<script src="../js/config.js?v=7"></script>
+<script src="admin.js?v=7"></script>
 </body>
 </html>

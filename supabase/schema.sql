@@ -25,8 +25,12 @@ create policy "admins read self" on public.admins
 create table if not exists public.categories (
   id    text primary key,
   label text not null,
-  sort  int  not null default 0
+  sort  int  not null default 0,
+  price int            -- ფიქსირებული ფასი კატეგორიაზე (მაგ. პოსტამენტები); ცარიელი = სიგრძით
 );
+alter table public.categories add column if not exists price int;
+alter table public.categories add column if not exists basins int not null default 1;   -- ვანების რაოდენობა
+alter table public.categories add column if not exists min_cm int;                       -- მინიმალური სიგრძე კედლის გასწვრივ
 alter table public.categories enable row level security;
 
 drop policy if exists "categories public read" on public.categories;
@@ -94,11 +98,43 @@ insert into public.settings (key, value) values
   ('email',    'keramoartcollection@gmail.com'),
   ('facebook', 'https://www.facebook.com/profile.php?id=61551452274576'),
   ('hours',    'ყოველდღე, 24 საათი — კვირის ყველა დღე'),
-  ('area',     'მთელი საქართველო'),
+  ('area',     'აზომვა ადგილზე: თბილისი, რუსთავი და თბილისის შემოგარენი (როცა შეკვეთა გადაწყვეტილია)'),
   ('price_tier1', '850'),   -- 1.2 მ-მდე
   ('price_tier2', '1250'),  -- 1.2–1.6 მ
-  ('price_wall',  '150')    -- კედელზე მიყენება
+  ('price_wall',  '150'),   -- მიტანა + კედელზე მიყენება (ერთვანიანი)
+  ('price_extra_basin', '350'),      -- ყოველი დამატებითი ვანა
+  ('price_wall_extra_basin', '50')   -- მიყენებას ემატება ყოველ დამატებით ვანაზე
 on conflict (key) do nothing;
+
+-- ---------- leads (საიტიდან მოსული მოთხოვნები) ----------
+create table if not exists public.leads (
+  id         uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  name       text not null check (char_length(name) between 1 and 120),
+  phone      text not null check (char_length(phone) between 3 and 40),
+  type       text check (char_length(type) <= 120),
+  city       text check (char_length(city) <= 120),
+  product    text check (char_length(product) <= 120),
+  size_cm    int,
+  est_price  int,
+  message    text check (char_length(message) <= 3000),
+  status     text not null default 'new' check (status in ('new','contacted','done','spam')),
+  note       text
+);
+alter table public.leads enable row level security;
+
+drop policy if exists "leads public insert" on public.leads;
+create policy "leads public insert" on public.leads
+  for insert to anon, authenticated with check (status = 'new' and note is null);
+drop policy if exists "leads admin read" on public.leads;
+create policy "leads admin read" on public.leads
+  for select to authenticated using (public.is_admin());
+drop policy if exists "leads admin update" on public.leads;
+create policy "leads admin update" on public.leads
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "leads admin delete" on public.leads;
+create policy "leads admin delete" on public.leads
+  for delete to authenticated using (public.is_admin());
 
 -- ---------- storage: product photos ----------
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
