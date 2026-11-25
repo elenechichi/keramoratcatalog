@@ -14,7 +14,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
 <link rel="preload" href="assets/fonts/bpg-nino-mtavruli-bold.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="assets/fonts/ar-archy-semibold.woff" as="font" type="font/woff" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=14">
+<link rel="stylesheet" href="css/style.css?v=21">
 </head>
 <body class="is-loading">
 
@@ -53,49 +53,41 @@
 <main id="top">
 
   <!-- HERO -->
-  <section class="hero" id="hero">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="hero-blob b2" aria-hidden="true"></div>
+  <section class="hero hero-video" id="hero">
+    <video class="hero-bg" id="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/video/hero-marble-poster.jpg" aria-hidden="true" tabindex="-1">
+      <source src="assets/video/hero-marble.mp4" type="video/mp4">
+    </video>
+    <div class="hero-shade" aria-hidden="true"></div>
     <div class="hero-spot" id="hero-spot" aria-hidden="true"></div>
-    <svg class="hero-grain" aria-hidden="true"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#grain)"/></svg>
     <div class="wrap">
       <div class="hero-copy">
-        <p class="live-pill anim-up" style="--d:0s"><span class="live-dot"></span>ონლაინ 24/7 · ვემსახურებით მთელ საქართველოს</p>
         <p class="hero-eyebrow anim-up" style="--d:.05s">დიზაინი, რომელიც სივრცეს ხასიათს სძენს</p>
         <h1 class="hero-title">
           <span class="line"><span>კერამოგრანიტი</span></span>
           <span class="line"><span>აბაზანისა და</span></span>
           <span class="line"><span class="accent-word">სამზარეულოსთვის</span></span>
         </h1>
-        <p class="rotator anim-up" style="--d:.45s" aria-live="off"><span class="rot-label">ვამზადებთ:</span><span class="rot-words" id="rot-words"><b class="on">აბაზანის ნიჟარებს</b><b>სამზარეულოს ზედაპირებს</b><b>კუნძულებს</b><b>პოსტამენტურ ნიჟარებს</b><b>ინდივიდუალურ დიზაინს</b></span></p>
-        <p class="lede anim-up" style="--d:.55s">ნიჟარები და სამზარეულოს ზედაპირები კერამოგრანიტისგან. ქვის სილამაზე, რომელიც თქვენს ზომაზე მზადდება და წლების განმავლობაში ინარჩუნებს სახეს.</p>
-        <div class="hero-price anim-up" style="--d:.65s">
-          <span class="hp-label">ნიჟარა</span>
-          <span class="hp-value"><b>850</b> ₾-დან</span>
-          <span class="hp-note">კედლის გასწვრივ სიგრძეში 1.2 მეტრამდე · მთელ საქართველოში</span>
-        </div>
-        <div class="hero-actions anim-up" style="--d:.75s">
+        <p class="lede anim-up" style="--d:.5s">ნიჟარები და სამზარეულოს ზედაპირები კერამოგრანიტისგან. ქვის სილამაზე, რომელიც თქვენს ზომაზე მზადდება და წლების განმავლობაში ინარჩუნებს სახეს.</p>
+        <div class="hero-actions anim-up" style="--d:.62s">
           <a href="#catalog" class="btn btn-primary magnetic"><span>აბაზანის კატალოგი</span></a>
-          <a href="#kitchen" class="btn btn-ghost magnetic"><span>სამზარეულოს ზედაპირები</span></a>
+          <a href="#kitchen" class="hero-link">სამზარეულოს ზედაპირები <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
-        <div class="hero-stats anim-up" style="--d:.85s">
-          <div class="hero-stat"><span class="num" data-count="17" id="stat-products">0</span><span class="label">განხორციელებული პროექტი</span></div>
-          <div class="hero-stat"><span class="num" data-count="5" id="stat-categories">0</span><span class="label">კატეგორია</span></div>
-          <div class="hero-stat"><span class="num" data-count="24" data-suffix="/7">0</span><span class="label">ვმუშაობთ ყოველდღე</span></div>
-        </div>
-      </div>
-      <div class="hero-mosaic" id="hero-mosaic" aria-hidden="true">
-        <div class="m m1" data-depth="18"><img src="assets/sinks/notte-01.jpg" alt=""></div>
-        <div class="m m2" data-depth="30"><img src="assets/sinks/calacatta-01.jpg" alt=""></div>
-        <div class="m m3" data-depth="24"><img src="assets/sinks/pietraserena-01.jpg" alt=""></div>
-        <div class="chip chip-1" data-depth="46"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>აზომვა: თბილისი · რუსთავი</div>
-        <div class="chip chip-2" data-depth="36"><svg viewBox="0 0 24 24"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>მთელი საქართველო</div>
-        <div class="price-badge" data-depth="40"><span>1.2 მ-მდე</span><b>850 ₾</b></div>
-        <div class="hero-dots" id="hero-dots"></div>
-        <svg class="mosaic-mark" viewBox="0 0 120 100"><path d="M60 6 L112 50 L100 50 L60 16 L20 50 L8 50 Z"/></svg>
+        <p class="hero-meta anim-up" style="--d:.74s">
+          <span class="hp-value">ნიჟარა <b>850</b> ₾-დან</span>
+          <i aria-hidden="true"></i>
+          <span>სამზარეულოს ზედაპირი მოთხოვნით</span>
+          <i aria-hidden="true"></i>
+          <span>ვემსახურებით მთელ საქართველოს</span>
+        </p>
       </div>
     </div>
-    <a href="#marquee" class="scroll-cue" aria-label="ქვემოთ"><span></span></a>
+    <div class="hero-bar anim-up" style="--d:.9s">
+      <div class="wrap hero-stats">
+        <div class="hero-stat"><span class="num" data-count="17" id="stat-products">0</span><span class="label">განხორციელებული პროექტი</span></div>
+        <div class="hero-stat"><span class="num" data-count="5" id="stat-categories">0</span><span class="label">კატეგორია</span></div>
+        <div class="hero-stat"><span class="num" data-count="24" data-suffix="/7">0</span><span class="label">ვმუშაობთ ყოველდღე</span></div>
+      </div>
+    </div>
   </section>
 
   <!-- MARQUEE -->
@@ -625,9 +617,9 @@
   <span class="g-counter lb-counter" id="lb-counter"></span>
 </div>
 
-<script src="js/config.js?v=14"></script>
-<script src="js/products.js?v=14"></script>
-<script src="js/data.js?v=14"></script>
-<script src="js/app.js?v=14"></script>
+<script src="js/config.js?v=21"></script>
+<script src="js/products.js?v=21"></script>
+<script src="js/data.js?v=21"></script>
+<script src="js/app.js?v=21"></script>
 </body>
 </html>

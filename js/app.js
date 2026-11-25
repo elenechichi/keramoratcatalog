@@ -751,7 +751,7 @@
     if (mq.matches || reduceMotion) return;
     var pool = state.products.filter(function (p) { return imagesOf(p).length; }).map(coverOf);
     var tiles = $$("#hero-mosaic .m");
-    if (pool.length <= tiles.length) return;
+    if (!tiles.length || pool.length <= tiles.length) return;
     var next = tiles.length, t = 0;
     swapTimer = setInterval(function () {
       var tile = tiles[t % tiles.length]; t++;
@@ -1016,6 +1016,20 @@
       curLabel.textContent = big ? big.dataset.cursor : "";
     });
   }
+
+  // ================= HERO VIDEO =================
+  // muted, looping background; paused when off-screen or when the visitor prefers reduced motion
+  (function () {
+    var v = $("hero-video"); if (!v) return;
+    v.muted = true;
+    if (reduceMotion) { v.removeAttribute("autoplay"); v.pause(); return; }
+    var play = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); };
+    v.addEventListener("canplay", function () { v.classList.add("ready"); }, { once: true });
+    if (v.readyState >= 3) v.classList.add("ready");
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (en) { if (en[0].isIntersecting) play(); else v.pause(); }, { threshold: 0.05 }).observe(v);
+    } else play();
+  })();
 
   // ================= SCROLL-LINKED EFFECTS =================
   // 1) about text lights up word by word  2) showcase photo expands to full screen
