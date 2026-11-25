@@ -7,7 +7,7 @@
 <title>KERAMO ART — ადმინ პანელი</title>
 <link rel="icon" type="image/svg+xml" href="../assets/logo-mark.svg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="admin.css?v=7">
+<link rel="stylesheet" href="admin.css?v=8">
 </head>
 <body>
 
@@ -103,13 +103,14 @@
       <div class="toolbar">
         <div>
           <h2>კატეგორიები</h2>
-          <p class="muted">„ფასი ₾“ — ფიქსირებული ფასი მთელ კატეგორიაზე (მაგ. პოსტამენტები: 1400 / 1550). ცარიელი = ფასი სიგრძით (850 / 1250). კატეგორიის წაშლისას მისი პროდუქტები რჩება კატეგორიის გარეშე.</p>
+          <p class="muted">„ფასი ₾“ — ფიქსირებული ფასი მთელ კატეგორიაზე (მაგ. პოსტამენტები: 1400 / 1550). ცარიელი = ფასი სიგრძით (850 / 1250). „განყოფ.“ — სად ჩანს კატეგორია საიტზე: აბაზანის კატალოგში თუ სამზარეულოს განყოფილებაში (სამზარეულოს პროდუქტს ფასი ხელით უწერეთ, ცარიელი = „ფასი შეთანხმებით“). კატეგორიის წაშლისას მისი პროდუქტები რჩება კატეგორიის გარეშე.</p>
         </div>
       </div>
       <div class="card">
         <div class="clist" id="clist"></div>
         <form class="cadd" id="cat-add-form">
           <input id="cat-new-label" placeholder="ახალი კატეგორიის სახელი" required>
+          <select id="cat-new-section" aria-label="განყოფილება"><option value="bath">აბაზანა</option><option value="kitchen">სამზარეულო</option></select>
           <button class="btn primary" type="submit">დამატება</button>
         </form>
       </div>
@@ -131,6 +132,7 @@
         <label>ყოველი დამატებითი ვანა, ₾<input name="price_extra_basin" type="number" min="0"></label>
         <label>მიტანა + კედელზე მიყენება (ერთვანიანი), ₾<input name="price_wall" type="number" min="0"></label>
         <label>მიყენებას ემატება ყოველ დამატებით ვანაზე, ₾<input name="price_wall_extra_basin" type="number" min="0"></label>
+        <label>სამზარეულოს ზედაპირი, ₾ გრძივ მეტრზე<input name="price_kitchen_m" type="number" min="0" placeholder="ცარიელი = „აზომვის შემდეგ“"></label>
         <div class="form-actions"><button class="btn primary" type="submit">შენახვა</button></div>
       </form>
     </section>
@@ -200,6 +202,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="../js/config.js?v=7"></script>
-<script src="admin.js?v=7"></script>
+<script src="admin.js?v=8"></script>
 </body>
 </html>

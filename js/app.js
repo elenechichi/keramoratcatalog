@@ -46,6 +46,13 @@
     return null;
   }
   function catOf(id) { return state.categories.filter(function (x) { return x.id === id; })[0] || {}; }
+  // "bath" | "kitchen" — column `section`, or inferred from an id that starts with "kitchen"
+  function sectionOf(catId) { var c = catOf(catId); return c.section || (/^kitchen/.test(catId || "") ? "kitchen" : "bath"); }
+  function isKitchen(p) { return sectionOf(p.category) === "kitchen"; }
+  function bathProducts() { return state.products.filter(function (p) { return !isKitchen(p); }); }
+  function kitchenProducts() { return state.products.filter(isKitchen); }
+  function bathCats() { return state.categories.filter(function (c) { return sectionOf(c.id) !== "kitchen"; }); }
+  function kitchenCats() { return state.categories.filter(function (c) { return sectionOf(c.id) === "kitchen"; }); }
   function catPrice(id) { var c = catOf(id); return c.price ? num(c.price, null) : null; }
   function isFixedCat(id) { return !!catPrice(id); }
   function basinsOf(catId) { return Math.max(1, num(catOf(catId).basins, 1)); }
@@ -54,12 +61,13 @@
   function priceFor(catId, cm) {
     var fixed = catPrice(catId);
     if (fixed) return fixed;
+    if (sectionOf(catId) === "kitchen") return null; // kitchen: manual price per project, or on request
     var base = priceForCm(cm);
     if (!base) return null;
     return base + (basinsOf(catId) - 1) * tiers().extraBasin;
   }
   function mountFor(catId) {
-    if (isFixedCat(catId)) return null;
+    if (isFixedCat(catId) || sectionOf(catId) === "kitchen") return null;
     var t = tiers();
     return t.wall + (basinsOf(catId) - 1) * t.wallExtra;
   }
@@ -82,8 +90,9 @@
     return c ? c.label : "";
   }
   function countFor(id) {
-    return id === "all" ? state.products.length : state.products.filter(function (p) { return p.category === id; }).length;
+    return id === "all" ? bathProducts().length : state.products.filter(function (p) { return p.category === id; }).length;
   }
+  function filterCats() { return bathCats().filter(function (c) { return countFor(c.id) > 0; }); }
 
   // ================= SPLIT TITLES =================
   $$(".split-title").forEach(function (h) {
@@ -104,7 +113,7 @@
   }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }) : null;
 
   function observe(el) { if (io) io.observe(el); else el.classList.add("in"); }
-  $$(".reveal, .split-title, .section-head").forEach(observe);
+  $$(".reveal, .split-title, .section-head, .kg, .k-collage").forEach(observe);
 
   // ================= COUNTERS =================
   function countUp(el) {
@@ -134,7 +143,7 @@
   }
 
   function renderFilters() {
-    var all = [{ id: "all", label: "ყველა" }].concat(state.categories.filter(function (c) { return countFor(c.id) > 0; }));
+    var all = [{ id: "all", label: "ყველა" }].concat(filterCats());
     $$(".filter-btn", filtersEl).forEach(function (b) { b.remove(); });
     all.forEach(function (cat) {
       var btn = document.createElement("button");
@@ -153,7 +162,7 @@
     if (id === state.category) return;
     state.category = id;
     $$(".filter-btn", filtersEl).forEach(function (b, i) {
-      var cats = ["all"].concat(state.categories.filter(function (c) { return countFor(c.id) > 0; }).map(function (c) { return c.id; }));
+      var cats = ["all"].concat(filterCats().map(function (c) { return c.id; }));
       b.setAttribute("aria-pressed", String(cats[i] === id));
     });
     moveInk();
@@ -167,21 +176,33 @@
   var arrowSvg = '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
   function renderGrid() {
-    var list = state.category === "all" ? state.products
+    var list = state.category === "all" ? bathProducts()
       : state.products.filter(function (p) { return p.category === state.category; });
     gridEl.innerHTML = "";
     emptyEl.hidden = list.length !== 0;
+    list.forEach(function (p, i) { gridEl.appendChild(makeTile(p, i)); });
+  }
 
-    list.forEach(function (p, i) {
+  function renderKitchenGrid() {
+    var list = kitchenProducts(), grid = $("kitchen-grid");
+    grid.innerHTML = "";
+    grid.hidden = !list.length;
+    $("kitchen-empty").hidden = true;
+    $("k-projects").hidden = !list.length; // shown only once real kitchen projects are added in admin
+    list.forEach(function (p, i) { grid.appendChild(makeTile(p, i)); });
+  }
+
+  function makeTile(p, i) {
       var tile = document.createElement("button");
       tile.type = "button";
       tile.className = "tile";
       tile.style.setProperty("--d", (i % 3) * 0.1 + "s");
       var price = priceOf(p);
-      tile.setAttribute("aria-label", p.name + " — " + sizeText(p) + (price ? " — " + price + " ლარი" : ""));
+      tile.setAttribute("aria-label", p.name + ", " + sizeText(p) + (price ? ", " + price + " ლარი" : ""));
       var n = imagesOf(p).length;
       tile.innerHTML =
         '<div class="tile-media">' +
+          '<span class="tile-curtain" aria-hidden="true"></span>' +
           (p.washer ? '<span class="tile-badge">სარეცხ მანქანაზე</span>' : "") +
           (n > 1 ? '<span class="tile-count"><svg viewBox="0 0 24 24"><path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' + n + "</span>" : "") +
           '<img src="' + esc(coverOf(p)) + '" alt="' + esc(p.name) + '" loading="lazy">' +
@@ -198,10 +219,10 @@
       var img = tile.querySelector("img");
       if (img.complete) img.classList.add("loaded"); else img.addEventListener("load", function () { img.classList.add("loaded"); });
       tile.addEventListener("click", function () { openPanel(p); });
+      tile.setAttribute("data-cursor", "ნახვა");
       if (finePointer && !reduceMotion) addTilt(tile);
-      gridEl.appendChild(tile);
       observe(tile);
-    });
+      return tile;
   }
 
   function addTilt(el) {
@@ -209,7 +230,7 @@
       var r = el.getBoundingClientRect();
       var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
       el.classList.add("tilting");
-      el.style.transform = "rotateY(" + ((x - .5) * 10) + "deg) rotateX(" + ((.5 - y) * 10) + "deg) translateY(-6px)";
+      el.style.transform = "rotateY(" + ((x - .5) * 6) + "deg) rotateX(" + ((.5 - y) * 6) + "deg) translateY(-6px)";
       var m = el.querySelector(".tile-media");
       m.style.setProperty("--gx", x * 100 + "%");
       m.style.setProperty("--gy", y * 100 + "%");
@@ -293,7 +314,7 @@
     img.onload = function () { img.classList.add("loaded"); };
     img.src = gal.images[gal.index];
     if (img.complete) img.classList.add("loaded");
-    img.alt = gal.name + " — ფოტო " + (gal.index + 1);
+    img.alt = gal.name + ", ფოტო " + (gal.index + 1);
     $("g-counter").textContent = n > 1 ? (gal.index + 1) + " / " + n : "";
     $("g-prev").hidden = $("g-next").hidden = n < 2;
     $$(".thumb", $("gallery-thumbs")).forEach(function (t, k) {
@@ -337,7 +358,9 @@
           ? '<div class="pp-side">' + esc(categoryLabel(p.category)) + "<br>ფიქსირებული ფასი, ნებისმიერი ზომა</div>"
           : '<div class="pp-side">' + (p.length_cm ? rangeText(p.length_cm) : "") + (nb > 1 ? " · " + nb + " ვანა" : "") +
             "<br>მიტანა და კედელზე კაპიტალურად მიყენება <b>+" + mount + " ₾</b></div>")
-      : '<div class="pp-main">ფასი შეთანხმებით</div><div class="pp-side">კედლის გასწვრივ 1.6 მ-ზე მეტი ან<br>ინდივიდუალური დიზაინი</div>';
+      : isKitchen(p)
+        ? '<div class="pp-main">ფასი შეთანხმებით</div><div class="pp-side">სამზარეულოს ზედაპირი<br>ფასი ინდივიდუალურად, მოთხოვნით</div>'
+        : '<div class="pp-main">ფასი შეთანხმებით</div><div class="pp-side">კედლის გასწვრივ 1.6 მ-ზე მეტი ან<br>ინდივიდუალური დიზაინი</div>';
 
     $("panel-whatsapp").href = "https://wa.me/" + waNumber() + "?text=" +
       encodeURIComponent("გამარჯობა! მაინტერესებს მოდელი „" + p.name + "“ (keramoart.com.ge)");
@@ -407,7 +430,7 @@
 
   // ================= CALCULATOR =================
   var calcLen = $("calc-len"), calcWall = $("calc-wall"), lastTotal = null, calcMode = null;
-  function calcCats() { return state.categories.filter(function (c) { return c.id !== "custom"; }); }
+  function calcCats() { return bathCats().filter(function (c) { return c.id !== "custom"; }); }
   function renderCalcModes() {
     var cats = calcCats();
     if (!calcMode && cats[0]) calcMode = cats[0].id;
@@ -434,7 +457,7 @@
     if (fixed) {
       wrap.classList.remove("custom");
       $("calc-currency").textContent = " ₾";
-      $("calc-note").textContent = categoryLabel(calcMode) + " — ფიქსირებული ფასი, ნებისმიერი ზომა";
+      $("calc-note").textContent = categoryLabel(calcMode) + ": ფიქსირებული ფასი, ნებისმიერი ზომა";
       bumpTo(totalEl, fixed);
       return;
     }
@@ -475,7 +498,7 @@
       wrap.classList.add("custom");
       totalEl.textContent = "შეთანხმებით";
       $("calc-currency").textContent = "";
-      $("calc-note").textContent = "კედლის გასწვრივ 1.6 მეტრზე მეტი — ფასს ინდივიდუალურად გეტყვით";
+      $("calc-note").textContent = "კედლის გასწვრივ 1.6 მეტრზე მეტი. ფასს ინდივიდუალურად გეტყვით";
       lastTotal = null;
     }
   }
@@ -532,10 +555,14 @@
   }
   function fillTypeSelect() {
     var sel = $("f-type");
-    sel.innerHTML = '<option value="">აირჩიეთ ტიპი</option>';
-    state.categories.concat([{ label: "ჯერ არ ვიცი, მჭირდება რჩევა" }]).forEach(function (c) {
-      var o = document.createElement("option"); o.value = o.textContent = c.label; sel.appendChild(o);
+    sel.innerHTML = '<option value="">აირჩიეთ</option>';
+    [["აბაზანის ნიჟარა", bathCats()], ["სამზარეულოს ზედაპირი", kitchenCats()]].forEach(function (g) {
+      if (!g[1].length) return;
+      var og = document.createElement("optgroup"); og.label = g[0];
+      g[1].forEach(function (c) { var o = document.createElement("option"); o.value = o.textContent = c.label; og.appendChild(o); });
+      sel.appendChild(og);
     });
+    var o = document.createElement("option"); o.value = o.textContent = "ჯერ არ ვიცი, მჭირდება რჩევა"; sel.appendChild(o);
   }
 
   // ================= FORM (real sending) =================
@@ -548,7 +575,7 @@
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify(Object.assign({
-        _subject: "🛁 ახალი მოთხოვნა საიტიდან — " + data["სახელი"] + (data["მოდელი"] ? " (" + data["მოდელი"] + ")" : ""),
+        _subject: (/სამზარეულო/.test(data["ტიპი"] || "") ? "🍳" : "🛁") + " ახალი მოთხოვნა საიტიდან: " + data["სახელი"] + (data["მოდელი"] ? " (" + data["მოდელი"] + ")" : ""),
         _template: "table",
         _captcha: "false"
       }, data))
@@ -743,6 +770,334 @@
     }, 3200);
   }
 
+  // ================= MATERIALS (procedural stone, SVG filters) =================
+  var MATS = [
+    { id: "nero",       name: "Nero Marquina", desc: "შავი, ოქროსფერი ძარღვებით",       base: "#181615", tone: "#2e2a26", vein: "#cfa96f", s: .95, vf: "0.0055 0.011", cf: "0.004 0.006", seed: 7 },
+    { id: "calacatta",  name: "Calacatta Oro", desc: "თეთრი, ნაცრისფერ-ოქროსფერი ძარღვებით", base: "#f2eee7", tone: "#ddd4c6", vein: "#8f8170", s: .8, vf: "0.005 0.013", cf: "0.003 0.005", seed: 11 },
+    { id: "travertino", name: "Travertino",    desc: "თბილი ქვიშისფერი, ჰორიზონტალური ფენებით", base: "#d6c09d", tone: "#bfa47c", vein: "#efe0c4", s: .55, vf: "0.0015 0.045", cf: "0.002 0.03", seed: 3 },
+    { id: "cemento",    name: "Cemento",       desc: "მატი ნაცრისფერი, ბეტონის ეფექტი",   base: "#8c8985", tone: "#6f6b66", vein: "#a8a49e", s: .22, vf: "0.02 0.02", cf: "0.012 0.012", seed: 5 },
+    { id: "verde",      name: "Verde Alpi",    desc: "ღრმა მწვანე, თეთრი ძარღვებით",       base: "#1c372f", tone: "#2a4d42", vein: "#e4dccb", s: .85, vf: "0.006 0.01", cf: "0.004 0.006", seed: 19 }
+  ];
+  function rgb(hex) { var n = parseInt(hex.slice(1), 16); return [(n >> 16) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
+  function marbleFilter(m) {
+    var t = rgb(m.tone), v = rgb(m.vein), k = (22 * m.s).toFixed(2);
+    return '<filter id="mat-' + m.id + '" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">' +
+      '<feTurbulence type="fractalNoise" baseFrequency="' + m.cf + '" numOctaves="3" seed="' + m.seed + '" result="c"/>' +
+      '<feColorMatrix in="c" type="matrix" values="0 0 0 0 ' + t[0] + ' 0 0 0 0 ' + t[1] + ' 0 0 0 0 ' + t[2] + ' 1.4 0 0 0 -.45" result="tone"/>' +
+      '<feTurbulence type="turbulence" baseFrequency="' + m.vf + '" numOctaves="4" seed="' + (m.seed + 1) + '" result="n"/>' +
+      '<feColorMatrix in="n" type="matrix" values="0 0 0 0 ' + v[0] + ' 0 0 0 0 ' + v[1] + ' 0 0 0 0 ' + v[2] + ' -' + k + ' 0 0 0 ' + m.s + '" result="veins"/>' +
+      '<feGaussianBlur in="veins" stdDeviation="3" result="g0"/>' +
+      '<feComponentTransfer in="g0" result="glow"><feFuncA type="linear" slope=".45"/></feComponentTransfer>' +
+      '<feFlood flood-color="' + m.base + '" result="b"/>' +
+      '<feMerge><feMergeNode in="b"/><feMergeNode in="tone"/><feMergeNode in="glow"/><feMergeNode in="veins"/></feMerge>' +
+    "</filter>";
+  }
+  $("mat-defs").innerHTML = MATS.map(marbleFilter).join("");
+  function matById(id) { return MATS.filter(function (m) { return m.id === id; })[0] || MATS[0]; }
+
+  // ================= KITCHEN STUDIO =================
+  var studio = { shape: "straight", mat: "nero", len: 320, edge: "სწორი", sink: true, splash: false };
+  var SVGNS = "http://www.w3.org/2000/svg";
+  var SHAPE_CAT = { straight: "kitchen-straight", corner: "kitchen-corner", u: "kitchen-u", island: "kitchen-island" };
+  var SHAPE_NAME = { straight: "სწორი", corner: "კუთხის", u: "U-ფორმის", island: "კუნძულით" };
+
+  function geometry(shape, T) {
+    var D = 62, polys = [], sink, hob, dims = [], walls = [];
+    if (shape === "corner") {
+      var a = Math.round(T * .58), b = Math.max(D + 60, T - a + D);
+      polys.push([[0, 0], [a, 0], [a, b], [a - D, b], [a - D, D], [0, D]]);
+      sink = [a * .3, (D - 40) / 2]; hob = [a - D + 6, D + (b - D) * .45, "v"];
+      dims.push({ x1: 0, y1: 0, x2: a, y2: 0, side: "top", v: a }, { x1: a, y1: 0, x2: a, y2: b, side: "right", v: b });
+      walls.push([[0, 0], [a, 0], [a, b]]);
+    } else if (shape === "u") {
+      var top = Math.max(2 * D + 70, Math.round(T * .42)), leg = Math.max(D + 50, Math.round((T - top) / 2) + D);
+      polys.push([[0, 0], [top, 0], [top, leg], [top - D, leg], [top - D, D], [D, D], [D, leg], [0, leg]]);
+      sink = [top / 2 - 25, (D - 40) / 2]; hob = [top - D + 6, D + (leg - D) * .4, "v"];
+      dims.push({ x1: 0, y1: 0, x2: top, y2: 0, side: "top", v: top }, { x1: top, y1: 0, x2: top, y2: leg, side: "right", v: leg });
+      walls.push([[0, leg], [0, 0], [top, 0], [top, leg]]);
+    } else if (shape === "island") {
+      var w = Math.round(T * .6), iw = Math.max(90, T - w), ih = 90, iy = D + 105, ix = (w - iw) / 2;
+      polys.push([[0, 0], [w, 0], [w, D], [0, D]]);
+      polys.push([[ix, iy], [ix + iw, iy], [ix + iw, iy + ih], [ix, iy + ih]]);
+      sink = [w * .28, (D - 40) / 2]; hob = [ix + iw / 2 - 30, iy + (ih - 52) / 2, "h"];
+      dims.push({ x1: 0, y1: 0, x2: w, y2: 0, side: "top", v: w }, { x1: ix, y1: iy + ih, x2: ix + iw, y2: iy + ih, side: "bottom", v: iw });
+      walls.push([[0, 0], [w, 0]]);
+    } else {
+      polys.push([[0, 0], [T, 0], [T, D], [0, D]]);
+      sink = [T * .26, (D - 40) / 2]; hob = [T * .62, (D - 52) / 2, "h"];
+      dims.push({ x1: 0, y1: 0, x2: T, y2: 0, side: "top", v: T });
+      walls.push([[0, 0], [T, 0]]);
+    }
+    var xs = [], ys = [];
+    polys.forEach(function (p) { p.forEach(function (q) { xs.push(q[0]); ys.push(q[1]); }); });
+    return { polys: polys, sink: sink, hob: hob, dims: dims, walls: walls, w: Math.max.apply(0, xs), h: Math.max.apply(0, ys) };
+  }
+
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  function renderStage(animate) {
+    var svg = $("stage-svg"), g = geometry(studio.shape, studio.len);
+    var k = Math.min(520 / g.w, 290 / g.h, 2.4), ox = (640 - g.w * k) / 2, oy = (440 - g.h * k) / 2 + 12;
+    function P(pt) { return (ox + pt[0] * k).toFixed(1) + "," + (oy + pt[1] * k).toFixed(1); }
+    function path(poly) { return "M" + poly.map(P).join(" L") + " Z"; }
+    svg.innerHTML = "";
+    svg.classList.toggle("animate", !!animate && !reduceMotion);
+    var defs = el("defs", {}, svg);
+    var clip = el("clipPath", { id: "slab-clip" }, defs);
+    g.polys.forEach(function (p) { el("path", { d: path(p) }, clip); });
+    var sheen = el("linearGradient", { id: "slab-sheen", x1: "0", y1: "0", x2: "1", y2: ".3" }, defs);
+    el("stop", { offset: "0", "stop-color": "#fff", "stop-opacity": "0" }, sheen);
+    el("stop", { offset: ".5", "stop-color": "#fff", "stop-opacity": ".22" }, sheen);
+    el("stop", { offset: "1", "stop-color": "#fff", "stop-opacity": "0" }, sheen);
+
+    // shadow + edge thickness
+    g.polys.forEach(function (p) { el("path", { d: path(p), class: "slab-shadow" }, svg); });
+    g.polys.forEach(function (p) { el("path", { d: path(p), class: "slab-edge", transform: "translate(0 7)" }, svg); });
+    // backsplash (wall panel)
+    if (studio.splash) g.walls.forEach(function (wl) {
+      el("polyline", { points: wl.map(function (q) { return P(q); }).join(" "), class: "slab-splash", transform: "translate(0 -5)" }, svg);
+    });
+    // stone surface
+    var fill = el("g", { "clip-path": "url(#slab-clip)", class: "slab-fill" }, svg);
+    el("rect", { x: 0, y: 0, width: 640, height: 440, filter: "url(#mat-" + studio.mat + ")", id: "slab-mat" }, fill);
+    el("rect", { x: -640, y: 0, width: 640, height: 440, fill: "url(#slab-sheen)", class: "slab-sheen" }, fill);
+    g.polys.forEach(function (p) { el("path", { d: path(p), class: "slab-outline", pathLength: "1" }, svg); });
+
+    // sink
+    if (studio.sink && g.sink) {
+      var sx = ox + g.sink[0] * k, sy = oy + g.sink[1] * k;
+      var sg = el("g", { class: "slab-sink" }, svg);
+      el("rect", { x: sx, y: sy, width: 50 * k, height: 40 * k, rx: 7 * k }, sg);
+      el("circle", { cx: sx + 25 * k, cy: sy + 20 * k, r: 2.2 * k, class: "drain" }, sg);
+      el("circle", { cx: sx + 25 * k, cy: oy + 4 * k, r: 2.6 * k, class: "tap" }, sg);
+    }
+    // cooktop
+    if (g.hob) {
+      var hx = ox + g.hob[0] * k, hy = oy + g.hob[1] * k, vert = g.hob[2] === "v";
+      var hw = (vert ? 50 : 60) * k, hh = (vert ? 60 : 52) * k;
+      var hg = el("g", { class: "slab-hob" }, svg);
+      el("rect", { x: hx, y: hy, width: hw, height: hh, rx: 3 * k }, hg);
+      [[.28, .3, 9], [.72, .3, 7], [.28, .72, 7], [.72, .72, 9]].forEach(function (c) {
+        el("circle", { cx: hx + hw * c[0], cy: hy + hh * c[1], r: c[2] * k * .75 }, hg);
+      });
+    }
+    // dimensions
+    g.dims.forEach(function (d) {
+      var dg = el("g", { class: "slab-dim" }, svg), off = 20;
+      var x1 = ox + d.x1 * k, y1 = oy + d.y1 * k, x2 = ox + d.x2 * k, y2 = oy + d.y2 * k;
+      if (d.side === "top") { y1 -= off; y2 -= off; }
+      if (d.side === "bottom") { y1 += off + 6; y2 += off + 6; }
+      if (d.side === "right") { x1 += off; x2 += off; }
+      el("line", { x1: x1, y1: y1, x2: x2, y2: y2, pathLength: "1" }, dg);
+      var horiz = d.side !== "right";
+      [[x1, y1], [x2, y2]].forEach(function (q) {
+        el("line", horiz ? { x1: q[0], y1: q[1] - 5, x2: q[0], y2: q[1] + 5 } : { x1: q[0] - 5, y1: q[1], x2: q[0] + 5, y2: q[1] }, dg);
+      });
+      var t = el("text", horiz
+        ? { x: (x1 + x2) / 2, y: y1 - 7, "text-anchor": "middle" }
+        : { x: x1 + 9, y: (y1 + y2) / 2 + 4, "text-anchor": "start" }, dg);
+      t.textContent = Math.round(d.v) + " სმ";
+    });
+    updateStudioText();
+  }
+
+  function updateStudioText() {
+    var m = matById(studio.mat);
+    $("stage-mat-name").textContent = m.name;
+    $("stage-mat-desc").textContent = m.desc;
+    $("st-mat-label").textContent = m.name;
+    $("st-len-out").textContent = (studio.len / 100).toFixed(1);
+    $("st-len").style.setProperty("--p", ((studio.len / 100 - 1.2) / (8 - 1.2) * 100) + "%");
+    var perM = num(state.settings.price_kitchen_m, 0), priceEl = $("st-price");
+    if (perM > 0) {
+      priceEl.innerHTML = "≈ " + fmt(Math.round(studio.len / 100 * perM)) + " <span>₾-დან</span>";
+      $("st-price-note").textContent = perM + " ₾ გრძივ მეტრზე · საბოლოო ფასი დგინდება აზომვის შემდეგ.";
+    } else {
+      priceEl.textContent = "მოთხოვნით";
+      $("st-price-note").textContent = "გამოგვიგზავნეთ თქვენი კონფიგურაცია და ფასს ინდივიდუალურად გეტყვით. კონსულტაცია უფასოა.";
+    }
+  }
+
+  function renderMatSwatches() {
+    $("st-mats").innerHTML = MATS.map(function (m) {
+      return '<button type="button" data-mat="' + m.id + '" aria-pressed="' + (m.id === studio.mat) + '" aria-label="' + esc(m.name) + '" title="' + esc(m.name) + '">' +
+        '<svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" filter="url(#mat-' + m.id + ')"/></svg></button>';
+    }).join("");
+  }
+
+  function pressIn(groupId, btn) {
+    $$("#" + groupId + " button").forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
+  }
+  $("st-shapes").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-shape]"); if (!b) return;
+    studio.shape = b.dataset.shape; pressIn("st-shapes", b);
+    if (studio.shape === "u" && studio.len < 380) { studio.len = 420; $("st-len").value = 4.2; }
+    if (studio.shape === "island" && studio.len < 340) { studio.len = 420; $("st-len").value = 4.2; }
+    renderStage(true);
+  });
+  $("st-mats").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-mat]"); if (!b) return;
+    studio.mat = b.dataset.mat; pressIn("st-mats", b);
+    var r = $("slab-mat");
+    if (!r || reduceMotion) return renderStage(false);
+    var stage = $("studio-stage");
+    stage.classList.remove("mat-swap"); void stage.offsetWidth; stage.classList.add("mat-swap");
+    setTimeout(function () { r.setAttribute("filter", "url(#mat-" + studio.mat + ")"); updateStudioText(); }, 220);
+  });
+  $("st-edges").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-edge]"); if (!b) return;
+    studio.edge = b.dataset.edge; pressIn("st-edges", b);
+    $("studio-stage").dataset.edge = b.dataset.edge;
+  });
+  $("st-len").addEventListener("input", function () { studio.len = Math.round(parseFloat(this.value) * 100); renderStage(false); });
+  $("st-sink").addEventListener("change", function () { studio.sink = this.checked; renderStage(false); });
+  $("st-splash").addEventListener("change", function () { studio.splash = this.checked; renderStage(false); });
+
+  function fillKitchenForm(lines) {
+    setTimeout(function () {
+      var lbl = categoryLabel(SHAPE_CAT[studio.shape]);
+      if (lbl) $("f-type").value = lbl;
+      $("f-size").value = studio.len;
+      $("f-product").value = matById(studio.mat).name;
+      if (lines) $("f-message").value = lines;
+    }, 400);
+  }
+  $("st-cta").addEventListener("click", function () {
+    fillKitchenForm(
+      "სამზარეულოს ზედაპირი\n" +
+      "ფორმა: " + SHAPE_NAME[studio.shape] + "\n" +
+      "მასალა: " + matById(studio.mat).name + "\n" +
+      "საერთო სიგრძე: ≈ " + studio.len + " სმ\n" +
+      "კიდე: " + studio.edge + "\n" +
+      "ჩაშენებული ნიჟარა: " + (studio.sink ? "კი" : "არა") + "\n" +
+      "კედლის პანელი: " + (studio.splash ? "კი" : "არა"));
+  });
+  $("k-empty-cta").addEventListener("click", function () { fillKitchenForm(null); });
+
+  // stage: draw when it scrolls into view, subtle tilt on desktop
+  var stageIO = "IntersectionObserver" in window ? new IntersectionObserver(function (en) {
+    if (en[0].isIntersecting) { renderStage(true); stageIO.disconnect(); }
+  }, { threshold: .35 }) : null;
+  if (finePointer && !reduceMotion) {
+    var stageEl = $("studio-stage"), tiltEl = $("stage-tilt");
+    stageEl.addEventListener("pointermove", function (e) {
+      var r = stageEl.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      tiltEl.style.transform = "rotateX(" + (32 - y * 8) + "deg) rotateZ(" + (x * -6) + "deg)";
+    });
+    stageEl.addEventListener("pointerleave", function () { tiltEl.style.transform = ""; });
+  }
+
+  // ================= CUSTOM CURSOR (desktop) =================
+  if (finePointer && !reduceMotion) {
+    var cur = $("cursor"), dot = $("cursor-dot"), curLabel = $("cursor-label");
+    var cx = -100, cy = -100, tx = -100, ty = -100, curOn = false;
+    document.body.classList.add("has-cursor");
+    window.addEventListener("pointermove", function (e) {
+      tx = e.clientX; ty = e.clientY;
+      dot.style.transform = "translate(" + tx + "px," + ty + "px)";
+      if (!curOn) { curOn = true; cx = tx; cy = ty; document.body.classList.add("cursor-on"); requestAnimationFrame(follow); }
+    }, { passive: true });
+    document.addEventListener("pointerleave", function () { document.body.classList.remove("cursor-on"); curOn = false; });
+    function follow() {
+      if (!curOn) return;
+      cx += (tx - cx) * .18; cy += (ty - cy) * .18;
+      cur.style.transform = "translate(" + cx + "px," + cy + "px)";
+      requestAnimationFrame(follow);
+    }
+    document.addEventListener("pointerover", function (e) {
+      var big = e.target.closest("[data-cursor]"), link = e.target.closest("a, button, input, label, select");
+      cur.classList.toggle("big", !!big);
+      cur.classList.toggle("link", !big && !!link);
+      curLabel.textContent = big ? big.dataset.cursor : "";
+    });
+  }
+
+  // ================= SCROLL-LINKED EFFECTS =================
+  // 1) about text lights up word by word  2) showcase photo expands to full screen
+  // 3) order-process line fills and steps light up
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+
+  var scrubEl = $("scrub-text"), scrubWords = [], scrubLast = -1;
+  (function splitWords(node) {
+    Array.prototype.slice.call(node.childNodes).forEach(function (ch) {
+      if (ch.nodeType === 3) {
+        var frag = document.createDocumentFragment();
+        ch.textContent.split(/(\s+)/).forEach(function (part) {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+          var s = document.createElement("span"); s.className = "sw"; s.textContent = part;
+          frag.appendChild(s); scrubWords.push(s);
+        });
+        node.replaceChild(frag, ch);
+      } else if (ch.nodeType === 1) splitWords(ch);
+    });
+  })(scrubEl);
+
+  var scSection = $("showcase"), scFrame = $("showcase-frame"), scImg = scFrame.querySelector("img"), scCopy = $("showcase-copy");
+  var procList = $("process-list"), procFill = $("process-fill"), procItems = $$(".process-item", procList);
+
+  function scrollFx() {
+    var vh = window.innerHeight, r, p;
+
+    // 1) word highlight
+    r = scrubEl.getBoundingClientRect();
+    p = reduceMotion ? 1 : clamp01((vh * .88 - r.top) / (vh * .55));
+    var n = Math.round(p * scrubWords.length);
+    if (n !== scrubLast) {
+      scrubWords.forEach(function (w, i) { w.classList.toggle("on", i < n); });
+      scrubLast = n;
+    }
+
+    // 2) showcase expand
+    r = scSection.getBoundingClientRect();
+    p = reduceMotion ? 1 : clamp01(-r.top / Math.max(1, r.height - vh));
+    var k = clamp01(p / .55), e = 1 - Math.pow(1 - k, 3), inv = 1 - e;
+    var side = mq.matches ? 6 : 24, top = mq.matches ? 18 : 14;
+    scFrame.style.clipPath = "inset(" + (top * inv) + "% " + (side * inv) + "% " + (top * inv) + "% " + (side * inv) + "% round " + (24 * inv) + "px)";
+    scImg.style.transform = "scale(" + (1.28 - .28 * e) + ")";
+    var q = clamp01((p - .42) / .28);
+    scFrame.style.setProperty("--q", q);
+    scCopy.style.opacity = q;
+    scCopy.style.transform = "translateY(" + ((1 - q) * 40) + "px)";
+    scCopy.style.pointerEvents = q > .5 ? "auto" : "none";
+    scSection.classList.toggle("sc-done", p > .04);
+
+    // 3) process timeline
+    r = procList.getBoundingClientRect();
+    p = reduceMotion ? 1 : clamp01((vh * .8 - r.top) / (r.height + vh * .2));
+    procFill.style.transform = "scaleX(" + p + ")";
+    procItems.forEach(function (it, i) { it.classList.toggle("lit", p >= (i + .5) / procItems.length - .12); });
+  }
+  // kitchen ideas gallery → lightbox
+  var kgButtons = $$("#k-gallery-grid .kg");
+  var kgImages = kgButtons.map(function (b) { return b.querySelector("img").getAttribute("src"); });
+  kgButtons.forEach(function (b, i) {
+    b.addEventListener("click", function () {
+      gal = { images: kgImages, index: i, name: b.querySelector("span").textContent };
+      renderThumbs(); showImage(i); openLightbox();
+    });
+  });
+
+  // kitchen collage: gentle opposite-direction parallax
+  var collage = $$(".k-collage .kc");
+  function collageFx() {
+    if (reduceMotion || mq.matches || !collage.length) return;
+    var r = collage[0].parentNode.getBoundingClientRect(), mid = r.top + r.height / 2 - window.innerHeight / 2;
+    collage.forEach(function (c) { c.style.transform = "translateY(" + (mid * parseFloat(c.dataset.speed)) + "px)"; });
+  }
+  window.addEventListener("scroll", function () { requestAnimationFrame(collageFx); }, { passive: true });
+
+  var fxTick = false;
+  function fxRequest() { if (!fxTick) { fxTick = true; requestAnimationFrame(function () { fxTick = false; scrollFx(); }); } }
+  window.addEventListener("scroll", fxRequest, { passive: true });
+  window.addEventListener("resize", fxRequest);
+  scrollFx();
+
   // ================= BOOT =================
   window.loadKeramoData().then(function (data) {
     state.categories = data.categories;
@@ -750,6 +1105,7 @@
     state.settings = data.settings;
     $("stat-products").dataset.count = state.products.length;
     $("stat-categories").dataset.count = state.categories.filter(function (c) { return countFor(c.id) > 0; }).length;
+    $("world-bath-count").textContent = bathProducts().length;
     applySettings();
     fillTypeSelect();
     renderMosaic();
@@ -757,6 +1113,10 @@
     setupMosaicSwap();
     renderFilters();
     renderGrid();
+    renderKitchenGrid();
+    renderMatSwatches();
+    renderStage(false);
+    if (stageIO) stageIO.observe($("studio-stage"));
     renderCalcModes();
     updateCalc();
     if (document.body.classList.contains("loaded")) startCounters();

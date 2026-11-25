@@ -203,3 +203,6 @@ label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); font-weig
 @media (max-width: 760px) { .crow { grid-template-columns: 1fr auto auto auto; } .cprice { grid-column: 1 / -1; } }
 .crow { grid-template-columns: 1fr auto auto auto auto auto auto auto; }
 .cprice input { width: 76px; }
+/* v8: section selector */
+.crow { grid-template-columns: 1fr auto auto auto auto auto auto auto auto; }
+.cprice select, #cat-new-section { padding: 8px; font: inherit; }

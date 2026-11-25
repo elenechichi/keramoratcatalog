@@ -12,7 +12,8 @@
     price_wall_extra_basin: "50",
     price_tier1: "850",
     price_tier2: "1250",
-    price_wall: "150"
+    price_wall: "150",
+    price_kitchen_m: ""   // სამზარეულოს ზედაპირი, ₾ გრძივ მეტრზე. ცარიელი = „ფასი აზომვის შემდეგ“
   };
 
   function fallback() {

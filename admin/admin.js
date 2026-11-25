@@ -45,8 +45,10 @@
   function catA(id) { return S.categories.filter(function (x) { return x.id === id; })[0] || {}; }
   function basinsA(id) { return Math.max(1, intOrNull(catA(id).basins) || 1); }
   function extraBasin() { return intOrNull(S.settings.price_extra_basin) || 350; }
+  function sectionA(id) { var c = catA(id); return c.section || (/^kitchen/.test(id || "") ? "kitchen" : "bath"); }
   function autoPrice(catId, cm) {
     var cp = catPriceA(catId); if (cp) return cp;
+    if (sectionA(catId) === "kitchen") return null; // სამზარეულო: ფასი ხელით ან „შეთანხმებით“
     var b = tierPrice(cm); if (!b) return null;
     return b + (basinsA(catId) - 1) * extraBasin();
   }
@@ -654,6 +656,9 @@
       var n = S.products.filter(function (p) { return p.category === c.id; }).length;
       return '<div class="crow" data-id="' + esc(c.id) + '">' +
         '<input class="clabel" value="' + esc(c.label) + '" aria-label="კატეგორიის სახელი">' +
+        '<label class="cprice" title="საიტის რომელ განყოფილებაში ჩანს">განყოფ.<select class="csection" aria-label="განყოფილება">' +
+          '<option value="bath"' + (sectionA(c.id) === "bath" ? " selected" : "") + '>აბაზანა</option>' +
+          '<option value="kitchen"' + (sectionA(c.id) === "kitchen" ? " selected" : "") + '>სამზარეულო</option></select></label>' +
         '<label class="cprice" title="ფიქსირებული ფასი. ცარიელი = ფასი სიგრძით">ფასი ₾<input class="cprice-in" data-f="price" type="number" min="0" placeholder="სიგრძით" value="' + (c.price || "") + '"></label>' +
         '<label class="cprice" title="ვანების რაოდენობა — ყოველი დამატებითი ვანა ფასს ემატება">ვანა<input class="cprice-in" data-f="basins" type="number" min="1" max="6" value="' + (c.basins || 1) + '"></label>' +
         '<label class="cprice" title="მინიმალური სიგრძე კედლის გასწვრივ">მინ. სმ<input class="cprice-in" data-f="min_cm" type="number" min="0" placeholder="—" value="' + (c.min_cm || "") + '"></label>' +
@@ -666,6 +671,15 @@
   }
 
   $("clist").addEventListener("change", function (e) {
+    if (e.target.classList.contains("csection")) {
+      var sid = e.target.closest(".crow").dataset.id, sv = e.target.value;
+      sb.from("categories").update({ section: sv }).eq("id", sid).then(function (r) {
+        if (r.error) return fail(r.error);
+        catA(sid).section = sv;
+        renderProducts(); toast("შენახულია", "ok");
+      });
+      return;
+    }
     if (e.target.classList.contains("cprice-in")) {
       var cid = e.target.closest(".crow").dataset.id, pv = intOrNull(e.target.value), fld = e.target.dataset.f;
       if (fld === "basins") pv = Math.max(1, pv || 1);
@@ -712,7 +726,8 @@
   $("cat-add-form").addEventListener("submit", function (e) {
     e.preventDefault();
     var label = $("cat-new-label").value.trim(); if (!label) return;
-    var row = { id: slugify(label), label: label, sort: S.categories.length };
+    var sec = $("cat-new-section") ? $("cat-new-section").value : "bath";
+    var row = { id: (sec === "kitchen" ? "kitchen-" : "") + slugify(label), label: label, sort: S.categories.length, section: sec };
     sb.from("categories").insert(row).select().single().then(function (r) {
       if (r.error) return fail(r.error);
       S.categories.push(r.data);
@@ -724,12 +739,12 @@
   // ---------- settings ----------
   function renderSettings() {
     var f = $("settings-form");
-    ["phone", "whatsapp", "email", "facebook", "hours", "area", "price_tier1", "price_tier2", "price_wall", "price_extra_basin", "price_wall_extra_basin"].forEach(function (k) { f[k].value = S.settings[k] || ""; });
+    ["phone", "whatsapp", "email", "facebook", "hours", "area", "price_tier1", "price_tier2", "price_wall", "price_extra_basin", "price_wall_extra_basin", "price_kitchen_m"].forEach(function (k) { f[k].value = S.settings[k] || ""; });
   }
   $("settings-form").addEventListener("submit", function (e) {
     e.preventDefault();
     var f = e.target;
-    var rows = ["phone", "whatsapp", "email", "facebook", "hours", "area", "price_tier1", "price_tier2", "price_wall", "price_extra_basin", "price_wall_extra_basin"].map(function (k) { return { key: k, value: f[k].value.trim() }; });
+    var rows = ["phone", "whatsapp", "email", "facebook", "hours", "area", "price_tier1", "price_tier2", "price_wall", "price_extra_basin", "price_wall_extra_basin", "price_kitchen_m"].map(function (k) { return { key: k, value: f[k].value.trim() }; });
     sb.from("settings").upsert(rows).then(function (r) {
       if (r.error) return fail(r.error);
       rows.forEach(function (row) { S.settings[row.key] = row.value; });

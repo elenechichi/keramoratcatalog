@@ -31,6 +31,7 @@ create table if not exists public.categories (
 alter table public.categories add column if not exists price int;
 alter table public.categories add column if not exists basins int not null default 1;   -- ვანების რაოდენობა
 alter table public.categories add column if not exists min_cm int;                       -- მინიმალური სიგრძე კედლის გასწვრივ
+alter table public.categories add column if not exists section text not null default 'bath'; -- 'bath' | 'kitchen' (საიტის განყოფილება)
 alter table public.categories enable row level security;
 
 drop policy if exists "categories public read" on public.categories;

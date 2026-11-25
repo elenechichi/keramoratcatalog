@@ -2,13 +2,18 @@
 // ზომები მიახლოებითია, შეფასებულია ფოტოების მიხედვით (სიგრძე × სიღრმე, სმ).
 // ზუსტი ზომა დგინდება ადგილზე აზომვის შემდეგ.
 
+// section: "bath" (აბაზანა) ან "kitchen" (სამზარეულო). ცარიელი = bath, თუ id არ იწყება "kitchen"-ით.
 var CATEGORIES = [
-  { id: "built-in",       label: "ერთვანიანი (კედლის)" },
-  { id: "double",         label: "ორვანიანი", basins: 2, min_cm: 120 },
-  { id: "washer",         label: "სარეცხ მანქანაზე მორგებული", min_cm: 90 },
-  { id: "pedestal-rect",  label: "პოსტამენტი — მართკუთხა", price: 1400 },
-  { id: "pedestal-taper", label: "პოსტამენტი — დაცერავებული ფეხით", price: 1550 },
-  { id: "custom",         label: "ინდივიდუალური დიზაინი" },
+  { id: "built-in",       label: "ერთვანიანი (კედლის)", section: "bath" },
+  { id: "double",         label: "ორვანიანი", basins: 2, min_cm: 120, section: "bath" },
+  { id: "washer",         label: "სარეცხ მანქანაზე მორგებული", min_cm: 90, section: "bath" },
+  { id: "pedestal-rect",  label: "მართკუთხა პოსტამენტი", price: 1400, section: "bath" },
+  { id: "pedestal-taper", label: "პოსტამენტი დაცერავებული ფეხით", price: 1550, section: "bath" },
+  { id: "custom",         label: "ინდივიდუალური დიზაინი", section: "bath" },
+  { id: "kitchen-straight", label: "სწორი ზედაპირი", section: "kitchen" },
+  { id: "kitchen-corner",   label: "კუთხის ზედაპირი", section: "kitchen" },
+  { id: "kitchen-u",        label: "U-ფორმის ზედაპირი", section: "kitchen" },
+  { id: "kitchen-island",   label: "სამზარეულოს კუნძული", section: "kitchen" },
 ];
 
 // ფასები ნიჟარის სიგრძის მიხედვით (ლარი)
@@ -38,7 +43,7 @@ var PRODUCTS = [
     note: "პოსტამენტური, თაღოვანი სარკის ქვეშ" },
   { id: "verde-01", name: "Verde", category: "washer", material: "კერამოგრანიტი", color: "თეთრი",
     length_cm: 130, depth_cm: 60, washer: true,
-    note: "სარეცხ მანქანაზე მორგებული — ნიჟარა და მანქანა ერთ ხაზზეა, ფერშიც და ზომაშიც" },
+    note: "სარეცხ მანქანაზე მორგებული. ნიჟარა და მანქანა ერთ ხაზზეა, ფერშიც და ზომაშიც" },
   { id: "lino-01", name: "Lino", category: "built-in", material: "კერამოგრანიტი", color: "ბეჟი",
     length_cm: 100, depth_cm: 45, washer: false,
     note: "მინიმალისტური, მრგვალი შუქამრეკლი სარკით" },
@@ -59,16 +64,16 @@ var PRODUCTS = [
     note: "მასიური პოსტამენტური კუბი, შავი ფიტინგები" },
   { id: "scultura-01", name: "Scultura", category: "pedestal-taper", material: "მარმარილოს ეფექტი", color: "ჭრელი, მრავალფეროვანი ძარღვებით",
     length_cm: 60, depth_cm: 45, height_cm: 85, washer: false,
-    note: "სამკუთხა, ქვემოთ დავიწროებული პოსტამენტი — დიზაინერული გადაწყვეტა" },
+    note: "სამკუთხა, ქვემოთ დავიწროებული პოსტამენტი, დიზაინერული გადაწყვეტა" },
   { id: "smeraldo-01", name: "Smeraldo", category: "custom", material: "მარმარილოს ეფექტი", color: "მუქი მწვანე",
     length_cm: null, depth_cm: null, washer: false,
-    note: "გარე/სამეურნეო კომპლექტი კონფორკასთან ერთად — ფასი ინდივიდუალურად" },
+    note: "გარე/სამეურნეო კომპლექტი კონფორკასთან ერთად, ფასი ინდივიდუალურად" },
   { id: "terracotta-01", name: "Terracotta", category: "pedestal-rect", material: "კერამოგრანიტი", color: "ბეჟი",
     length_cm: 45, depth_cm: 40, height_cm: 85, washer: false,
     note: "პოსტამენტური, გეომეტრიული ფილით შერწყმული" },
   { id: "caffe-01", name: "Caffè", category: "double", material: "მარმარილოს ეფექტი", color: "კრემისფერი",
     length_cm: 160, depth_cm: 45, washer: false,
-    note: "კომერციული ობიექტის ორვანიანი ნიჟარა — Cafe Bathroom Interior" },
+    note: "კომერციული ობიექტის ორვანიანი ნიჟარა კაფეს სველი წერტილისთვის" },
   { id: "statuario-01", name: "Statuario", category: "built-in", material: "მარმარილოს ეფექტი", color: "თეთრი, მუქი ძარღვებით",
     length_cm: 80, depth_cm: 45, washer: false,
     note: "კედელზე დამაგრებული, ღია თაროთი ქვემოთ" },
